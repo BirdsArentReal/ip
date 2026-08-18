@@ -1,10 +1,30 @@
+import java.util.Scanner;
+
 public class Duchess {
     public static void main(String[] args) {
         printSeparator();
         greet();
         printSeparator();
+
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            String command = scanner.nextLine();
+
+            if (command.equalsIgnoreCase("bye")) {
+                break;
+            }
+
+            printSeparator();
+            System.out.println(command);
+            printSeparator();
+
+        }
+
+        printSeparator();
         exit();
         printSeparator();
+
+        scanner.close();
     }
 
     private static void printSeparator() {
