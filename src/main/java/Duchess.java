@@ -1,6 +1,7 @@
-public class Duke {
+public class Duchess {
     public static void main(String[] args) {
-        String banner = " ____        _        \n"
+        String banner =
+                  " ____        _        \n"
                 + "|  _ \\ _   _| | _____ \n"
                 + "| | | | | | | |/ / _ \\\n"
                 + "| |_| | |_| |   <  __/\n"
