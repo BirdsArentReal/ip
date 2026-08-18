@@ -1,6 +1,17 @@
 public class Duchess {
     public static void main(String[] args) {
+        printSeparator();
         greet();
+        printSeparator();
+        exit();
+        printSeparator();
+    }
+
+    private static void printSeparator() {
+        // 40 underscores
+        final String separator = "*________________________________________*";
+        System.out.println(separator);
+
     }
 
     private static void greet() {
