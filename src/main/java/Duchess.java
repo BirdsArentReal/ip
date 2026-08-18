@@ -2,9 +2,7 @@ import java.util.Scanner;
 
 public class Duchess {
     public static void main(String[] args) {
-        printSeparator();
-        greet();
-        printSeparator();
+        say(getGreeting());
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -14,46 +12,43 @@ public class Duchess {
                 break;
             }
 
-            printSeparator();
-            System.out.println(command);
-            printSeparator();
+            say(command);
 
         }
 
-        printSeparator();
-        exit();
-        printSeparator();
+        say(getExitMessage());
 
         scanner.close();
     }
 
-    private static void printSeparator() {
+    private static void say(String message) {
         // 40 underscores
         final String separator = "*________________________________________*";
+
         System.out.println(separator);
-
+        System.out.println(message);
+        System.out.println(separator);
     }
 
-    private static void greet() {
+    private static String getGreeting() {
         final String name = "Duchess";
-        printBanner();
-        System.out.println("Hello! I am " + name + ".");
-        System.out.println("What can I do for you?");
-
+        return getBanner()
+                + "Hello! I am " + name + ". \n"
+                + "What can I do for you?";
     }
 
-    private static void exit() {
-        System.out.println("Bye! Hope to see you again soon!");
+    private static String getExitMessage() {
+        return "Bye! Hope to see you again soon!";
     }
 
-    private static void printBanner() {
-        String banner =
+    private static String getBanner() {
+        return
                 " ____  _   _  _____    _ ____  ___  ___\n"
                         + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
                         + "| | | | | | | |  | |__| | |__|  | |  | |\n"
                         + "| | | | | | | |  |  __  |  __|\\  \\/\\  \\/\n"
                         + "| |_| | \\_/ | |__| |  | | |__ /\\  \\/\\  \\\n"
                         + "|____/ \\___/ \\___\\_|  |_|____|\\___/\\___/\n";
-        System.out.println(banner);
+
     }
 }
