@@ -11,6 +11,10 @@ public class Duchess {
 
     }
 
+    private static void exit() {
+        System.out.println("Bye! Hope to see you again soon!");
+    }
+
     private static void printBanner() {
         String banner =
                 " ____  _   _  _____    _ ____  ___  ___\n"
