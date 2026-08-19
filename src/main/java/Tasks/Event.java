@@ -1,8 +1,10 @@
+package Tasks;
+
 public class Event extends Task {
     private final String from;
     private final String to;
 
-    Event(String description, String from, String to) {
+    public Event(String description, String from, String to) {
         super(description);
         this.from = from == null ? "" : from;
         this.to = to == null ? "" : to;

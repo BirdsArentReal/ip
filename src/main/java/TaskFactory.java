@@ -1,14 +1,19 @@
+import Tasks.Deadline;
+import Tasks.Event;
+import Tasks.Task;
+import Tasks.ToDo;
+
 public class TaskFactory {
 
     /**
-     * Create a ToDo from a description string.
+     * Create a Tasks.ToDo from a description string.
      */
     private static ToDo createToDo(String description) {
         return new ToDo(description == null ? "" : description.trim());
     }
 
     /**
-     * Create a Deadline from a string of the form:
+     * Create a Tasks.Deadline from a string of the form:
      *   "<description> /by <byText>"
      * If "/by" is missing, the whole string is treated as the description.
      */
@@ -28,7 +33,7 @@ public class TaskFactory {
     }
 
     /**
-     * Create an Event from a string of the form:
+     * Create a Tasks.Event from a string of the form:
      *   "<description> /from <fromText> /to <toText>"
      * /from or /to may be omitted; parsing is tolerant.
      */
@@ -69,9 +74,9 @@ public class TaskFactory {
     }
 
     /**
-     * Convenience: create a Task from a full command line.
+     * Convenience: create a Tasks.Task from a full command line.
      * Recognizes leading keywords: "todo ", "deadline ", "event ".
-     * If none match, returns a ToDo with the whole command as description.
+     * If none match, returns a Tasks.ToDo with the whole command as description.
      */
     public static Task createFromCommand(String commandLower) {
         if (commandLower.startsWith("todo ")) {

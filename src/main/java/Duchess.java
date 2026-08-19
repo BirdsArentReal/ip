@@ -1,3 +1,5 @@
+import Tasks.Task;
+
 import java.util.ArrayList;
 import java.lang.StringBuilder;
 import java.util.Scanner;

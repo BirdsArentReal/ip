@@ -1,8 +1,10 @@
-public class Task {
+package Tasks;
+
+public abstract class Task {
     private final String description;
     private boolean done;
 
-    Task(String description) {
+    protected Task(String description) {
         this.description = description;
         this.done = false;
     }
