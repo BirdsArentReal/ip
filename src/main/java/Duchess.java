@@ -66,6 +66,10 @@ public class Duchess {
     }
 
     private String displayList() {
+        if (tasks.isEmpty()) {
+            return "You have no tasks pending.";
+        }
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < tasks.size(); i++) {
             sb.append(" ").append(i + 1).append(". ").append(tasks.get(i));
