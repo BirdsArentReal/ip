@@ -11,12 +11,18 @@ public class Duchess {
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            String command = scanner.nextLine();
+            String command = scanner.nextLine().toLowerCase();
 
-            if (command.equalsIgnoreCase("bye")) {
+            if (command.equals("bye")) {
                 break;
-            } else if (command.equalsIgnoreCase("list")) {
-                say(displayList(Duchess.arr));
+            }
+
+            if (command.equals("list")) {
+                say(displayList(Duchess.task));
+            } else if (command.startsWith("mark ")) {
+                handleMark(command, Duchess.task);
+            } else if (command.startsWith("unmark ")) {
+                handleUnmark(command, Duchess.task);
             } else {
                 say("added: " + command);
                 task.add(new Task(command));
