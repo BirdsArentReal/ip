@@ -3,7 +3,7 @@ import java.lang.StringBuilder;
 import java.util.Scanner;
 
 public class Duchess {
-    static final ArrayList<String> arr = new ArrayList<>();
+    static final ArrayList<Task> task = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -19,7 +19,7 @@ public class Duchess {
                 say(displayList(Duchess.arr));
             } else {
                 say("added: " + command);
-                arr.add(command);
+                task.add(new Task(command));
             }
 
         }
@@ -38,11 +38,11 @@ public class Duchess {
         System.out.println(separator);
     }
 
-    private static String displayList(ArrayList<String> items) {
+    private static String displayList(ArrayList<Task> tasks) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < items.size(); i++) {
-            sb.append(" ").append(i + 1).append(". ").append(items.get(i));
-            if (i < items.size() - 1) {
+        for (int i = 0; i < tasks.size(); i++) {
+            sb.append(" ").append(i + 1).append(". ").append(tasks.get(i));
+            if (i < tasks.size() - 1) {
                 sb.append("\n");
             }
         }
