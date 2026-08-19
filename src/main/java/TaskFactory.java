@@ -50,29 +50,40 @@ public class TaskFactory {
      *   "<description> /from <fromText> /to <toText>"
      * /from or /to may be omitted; parsing is tolerant.
      */
-    private static Event createEvent(String rest) {
-        if (rest == null) {
-            return new Event("", "", "");
+    private static Event createEvent(String rest) throws TaskException {
+        if (rest.isEmpty()) {
+            // empty description
+            throw TaskException.emptyDescription("event");
         }
 
         String trimmed = rest.trim();
         int fromIndex = trimmed.indexOf("/from");
         int toIndex = trimmed.indexOf("/to");
 
-        String desc = trimmed;
-        String from = "";
-        String to = "";
+        if (fromIndex < 0) {
+            throw TaskException.missingField("event", "from");
+        } else if (toIndex < 0) {
+            throw TaskException.missingField("event", "to");
+        }
 
-        if (fromIndex >= 0 && toIndex >= 0 && fromIndex < toIndex) {
+        String desc, from, to;
+
+        if (toIndex < fromIndex) {
+            desc = trimmed.substring(0, toIndex).trim();
+            from = trimmed.substring(fromIndex + 5).trim();
+            to = trimmed.substring(toIndex + 3, fromIndex).trim();
+        } else {
             desc = trimmed.substring(0, fromIndex).trim();
             from = trimmed.substring(fromIndex + 5, toIndex).trim();
             to = trimmed.substring(toIndex + 3).trim();
-        } else if (fromIndex >= 0) {
-            desc = trimmed.substring(0, fromIndex).trim();
-            from = trimmed.substring(fromIndex + 5).trim();
-        } else if (toIndex >= 0) {
-            desc = trimmed.substring(0, toIndex).trim();
-            to = trimmed.substring(toIndex + 3).trim();
+        }
+
+        if (desc.isEmpty()) {
+            throw TaskException.emptyDescription("event");
+        } else if (from.isEmpty()) {
+            throw TaskException.missingField("event", "from");
+        } else if (to.isEmpty()) {
+            throw TaskException.missingField("event", "to");
         }
 
         return new Event(desc, from, to);
