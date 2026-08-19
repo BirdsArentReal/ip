@@ -6,20 +6,12 @@ public class Event extends Task {
 
     public Event(String description, String from, String to) {
         super(description);
-        this.from = from == null ? "" : from;
-        this.to = to == null ? "" : to;
+        this.from = from;
+        this.to = to;
     }
 
     private String getPeriod() {
-        if (from.isEmpty() && to.isEmpty()) {
-            return "";
-        } else if (from.isEmpty()) {
-            return String.format("(to: %s)", this.to);
-        } else if (to.isEmpty()) {
-            return String.format("(from: %s)", this.from);
-        } else {
-            return String.format("(from: %s to: %s)", this.from, this.to);
-        }
+        return String.format("(from: %s to: %s)", this.from, this.to);
     }
 
     @Override
