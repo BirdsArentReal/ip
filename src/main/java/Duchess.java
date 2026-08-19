@@ -38,6 +38,8 @@ public class Duchess {
                 }
             } catch (DuchessException | TaskException d) {
                 say(d.getMessage());
+            } catch (NumberFormatException n) {
+                say("Error: The command " + command + " only works with valid integers!");
             }
 
 
