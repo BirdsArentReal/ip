@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.lang.StringBuilder;
 import java.util.Scanner;
 
 public class Duchess {
@@ -28,6 +30,18 @@ public class Duchess {
         System.out.println(separator);
         System.out.println(message);
         System.out.println(separator);
+    }
+
+    private static String displayList(ArrayList<String> items) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < items.size(); i++) {
+            sb.append(" ").append(i + 1).append(". ").append(items.get(i));
+            if (i < items.size() - 1) {
+                sb.append("\n");
+            }
+        }
+
+        return sb.toString();
     }
 
     private static String getGreeting() {
