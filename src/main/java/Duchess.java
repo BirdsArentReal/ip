@@ -3,13 +3,13 @@ import java.lang.StringBuilder;
 import java.util.Scanner;
 
 public class Duchess {
-    static final ArrayList<Task> tasks = new ArrayList<>();
-
     public static void main(String[] args) {
 
         say(getGreeting());
 
+        Duchess duchess = new Duchess();
         Scanner scanner = new Scanner(System.in);
+
         while (true) {
             String command = scanner.nextLine().toLowerCase();
 
@@ -18,13 +18,13 @@ public class Duchess {
             }
 
             if (command.equals("list")) {
-                say(displayList(Duchess.tasks));
+                say(duchess.displayList());
             } else if (command.startsWith("mark ")) {
-                handleMark(command, Duchess.tasks);
+                say(duchess.handleMark(command));
             } else if (command.startsWith("unmark ")) {
-                handleUnmark(command, Duchess.tasks);
+                say(duchess.handleUnmark(command));
             } else if (TaskFactory.isTaskCommand(command)) {
-                handleAddTask(command, Duchess.tasks);
+                say(duchess.handleAddTask(command));
             } else {
                 say("Error: Unrecognised input");
             }
@@ -32,8 +32,14 @@ public class Duchess {
         }
 
         say(getExitMessage());
-
         scanner.close();
+    }
+
+
+    final ArrayList<Task> tasks;
+
+    Duchess() {
+        this.tasks = new ArrayList<>();
     }
 
     private static void say(String message) {
@@ -45,7 +51,7 @@ public class Duchess {
         System.out.println(separator);
     }
 
-    private static String displayList(ArrayList<Task> tasks) {
+    private String displayList() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < tasks.size(); i++) {
             sb.append(" ").append(i + 1).append(". ").append(tasks.get(i));
@@ -57,49 +63,43 @@ public class Duchess {
         return sb.toString();
     }
 
-    private static void handleAddTask(String command, ArrayList<Task> tasks) {
+    private String handleAddTask(String command) {
         Task newTask = TaskFactory.createFromCommand(command);
         tasks.add(newTask);
-        say(String.format(
+
+        return String.format(
                 "Got it. I've added this task:\n" +
                 "  %s\n" +
                 "Now you have %s task%s in the list.",
                 newTask,
                 tasks.size(),
                 tasks.size() == 1 ? "" : "s"
-                )
+
         );
     }
 
-    private static void handleMark(String command, ArrayList<Task> tasks) {
+    private String handleMark(String command) {
         String arg = command.substring(5).trim(); // after "mark "
         int idx = Integer.parseInt(arg);
         if (idx < 1 || idx > tasks.size()) {
-            say("Invalid task number.");
-            return;
+            return "Invalid task number.";
+
         }
         Task t = tasks.get(idx - 1);
         t.mark();
-        say("Nice! I've marked this task as done:\n  " + t);
+        return "Nice! I've marked this task as done:\n  " + t;
     }
 
-    private static void handleUnmark(String command, ArrayList<Task> tasks) {
+    private String handleUnmark(String command) {
         String arg = command.substring(7).trim(); // after "unmark "
         int idx = Integer.parseInt(arg);
         if (idx < 1 || idx > tasks.size()) {
-            say("Invalid task number.");
-            return;
+            return "Invalid task number.";
+
         }
         Task t = tasks.get(idx - 1);
         t.unmark();
-        say("OK, I've marked this task as not done yet:\n  " + t);
-    }
-
-    private static String getGreeting() {
-        final String name = "Duchess";
-        return getBanner()
-                + "Hello! I am " + name + ". \n"
-                + "What can I do for you?";
+        return ("OK, I've marked this task as not done yet:\n  " + t);
     }
 
     private static String getExitMessage() {
@@ -107,12 +107,20 @@ public class Duchess {
     }
 
     private static String getBanner() {
-        return    " ____  _   _  _____    _ ____  ___  ___\n"
+        return
+                " ____  _   _  _____    _ ____  ___  ___\n"
                 + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
                 + "| | | | | | | |  | |__| | |__|  | |  | |\n"
                 + "| | | | | | | |  |  __  |  __|\\  \\/\\  \\/\n"
                 + "| |_| | \\_/ | |__| |  | | |__ /\\  \\/\\  \\\n"
                 + "|____/ \\___/ \\___\\_|  |_|____|\\___/\\___/\n";
 
+    }
+
+    private static String getGreeting() {
+        final String name = "Duchess";
+        return getBanner()
+                + "Hello! I am " + name + ". \n"
+                + "What can I do for you?";
     }
 }
