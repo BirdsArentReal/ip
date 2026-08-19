@@ -22,4 +22,13 @@ public class Task {
     public void unmark() {
         this.done = false;
     }
+
+    /**
+     * Default display format for a task. Subclasses can override this to change how tasks are shown.
+     * Example output: "[X] read book" or "[ ] return book"
+     */
+    @Override
+    public String toString() {
+        return (done ? "[X] " : "[ ] ") + description;
+    }
 }
