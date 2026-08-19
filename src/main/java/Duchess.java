@@ -27,7 +27,10 @@ public class Duchess {
                     say(duchess.handleMark(command));
                 } else if (command.startsWith("unmark ")) {
                     say(duchess.handleUnmark(command));
-                } else if (TaskFactory.isTaskCommand(command)) {
+                } else if (command.startsWith("delete ")) {
+                    say(duchess.handleDeleteTask(command));
+                }
+                else if (TaskFactory.isTaskCommand(command)) {
                     say(duchess.handleAddTask(command));
                 } else {
                     throw new DuchessException(String.format(
@@ -93,6 +96,23 @@ public class Duchess {
                 tasks.size(),
                 tasks.size() == 1 ? "" : "s"
 
+        );
+    }
+
+    private String handleDeleteTask(String command) {
+        String arg = command.substring(7).trim(); // after "delete "
+        int idx = Integer.parseInt(arg);
+        if (idx < 1 || idx > tasks.size()) {
+            return "Invalid task number.";
+        }
+        Task t = tasks.remove(idx - 1);
+        return String.format(
+                "Noted. I've removed this task:\n"
+                + "%s\n"
+                + "Now you have %d task%s in the list.",
+                t,
+                tasks.size(),
+                tasks.size() == 1 ? "" : "s"
         );
     }
 
