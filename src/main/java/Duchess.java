@@ -23,9 +23,10 @@ public class Duchess {
                 handleMark(command, Duchess.tasks);
             } else if (command.startsWith("unmark ")) {
                 handleUnmark(command, Duchess.tasks);
+            } else if (TaskFactory.isTaskCommand(command)) {
+                tasks.add(TaskFactory.createFromCommand(command));
             } else {
-                say("added: " + command);
-                task.add(new Task(command));
+                say("Error: Unrecognised input");
             }
 
         }
