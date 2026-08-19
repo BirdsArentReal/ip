@@ -8,10 +8,10 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        String base = "[D]" + super.toString();
-        if (by != null && !by.isEmpty()) {
-            base += " (by: " + by + ")";
-        }
-        return base;
+        String byPart = (by != null && !by.isEmpty()) ? String.format(" (by: %s)", by) : "";
+
+        return String.format("[D]%s%s",
+                super.toString(),
+                byPart);
     }
 }
