@@ -22,19 +22,27 @@ public class TaskFactory {
      *   "<description> /by <byText>"
      * If "/by" is missing, the whole string is treated as the description.
      */
-    private static Deadline createDeadline(String rest) {
-        if (rest == null) {
-            return new Deadline("", "");
+    private static Deadline createDeadline(String rest) throws TaskException {
+        if (rest.isEmpty()) {
+            throw TaskException.emptyDescription("deadline");
         }
-        String trimmed = rest.trim();
-        int byIndex = trimmed.indexOf("/by");
-        if (byIndex >= 0) {
-            String desc = trimmed.substring(0, byIndex).trim();
-            String by = trimmed.substring(byIndex + 3).trim();
-            return new Deadline(desc, by);
-        } else {
-            return new Deadline(trimmed, "");
+
+        int byIndex = rest.trim().indexOf("/by");
+
+        if (byIndex < 0) {
+            throw TaskException.missingField("deadline", "by");
         }
+
+        String desc = rest.substring(0, byIndex).trim();
+        String by = rest.substring(byIndex + 3).trim();
+
+        if (desc.isEmpty()) {
+            throw TaskException.emptyDescription("deadline");
+        } else if (by.isEmpty()) {
+            throw TaskException.missingField("deadline", "by");
+        }
+
+        return new Deadline(desc, by);
     }
 
     /**
