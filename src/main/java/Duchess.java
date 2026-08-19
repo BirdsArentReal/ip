@@ -50,6 +50,30 @@ public class Duchess {
         return sb.toString();
     }
 
+    private static void handleMark(String command, ArrayList<Task> items) {
+        String arg = command.substring(5).trim(); // after "mark "
+        Integer idx = Integer.parseInt(arg);
+        if (idx == null || idx < 1 || idx > items.size()) {
+            say("Invalid task number.");
+            return;
+        }
+        Task t = items.get(idx - 1);
+        t.mark();
+        say("Nice! I've marked this task as done:\n  " + t.toString());
+    }
+
+    private static void handleUnmark(String command, ArrayList<Task> items) {
+        String arg = command.substring(7).trim(); // after "unmark "
+        Integer idx = Integer.parseInt(arg);
+        if (idx == null || idx < 1 || idx > items.size()) {
+            say("Invalid task number.");
+            return;
+        }
+        Task t = items.get(idx - 1);
+        t.unmark();
+        say("OK, I've marked this task as not done yet:\n  " + t.toString());
+    }
+
     private static String getGreeting() {
         final String name = "Duchess";
         return getBanner()
