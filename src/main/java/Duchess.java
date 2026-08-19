@@ -59,6 +59,7 @@ public class Duchess {
 
     private static void handleMark(String command, ArrayList<Task> tasks) {
         String arg = command.substring(5).trim(); // after "mark "
+        int idx = Integer.parseInt(arg);
         if (idx < 1 || idx > tasks.size()) {
             say("Invalid task number.");
             return;
@@ -70,6 +71,7 @@ public class Duchess {
 
     private static void handleUnmark(String command, ArrayList<Task> tasks) {
         String arg = command.substring(7).trim(); // after "unmark "
+        int idx = Integer.parseInt(arg);
         if (idx < 1 || idx > tasks.size()) {
             say("Invalid task number.");
             return;
