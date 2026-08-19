@@ -1,3 +1,4 @@
+import Tasks.Exceptions.TaskException;
 import Tasks.Task;
 
 import java.util.ArrayList;
@@ -19,17 +20,26 @@ public class Duchess {
                 break;
             }
 
-            if (command.equals("list")) {
-                say(duchess.displayList());
-            } else if (command.startsWith("mark ")) {
-                say(duchess.handleMark(command));
-            } else if (command.startsWith("unmark ")) {
-                say(duchess.handleUnmark(command));
-            } else if (TaskFactory.isTaskCommand(command)) {
-                say(duchess.handleAddTask(command));
-            } else {
-                say("Error: Unrecognised input");
+            try {
+                if (command.equals("list")) {
+                    say(duchess.displayList());
+                } else if (command.startsWith("mark ")) {
+                    say(duchess.handleMark(command));
+                } else if (command.startsWith("unmark ")) {
+                    say(duchess.handleUnmark(command));
+                } else if (TaskFactory.isTaskCommand(command)) {
+                    say(duchess.handleAddTask(command));
+                } else {
+                    throw new DuchessException(String.format(
+                            "The duchess does not understand what you mean by %s.\n"
+                            + "Please enter valid commands only.",
+                            command
+                    ));
+                }
+            } catch (DuchessException | TaskException d) {
+                say(d.getMessage());
             }
+
 
         }
 
@@ -65,7 +75,7 @@ public class Duchess {
         return sb.toString();
     }
 
-    private String handleAddTask(String command) {
+    private String handleAddTask(String command) throws TaskException {
         Task newTask = TaskFactory.createFromCommand(command);
         tasks.add(newTask);
 
