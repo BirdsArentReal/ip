@@ -24,7 +24,7 @@ public class Duchess {
             } else if (command.startsWith("unmark ")) {
                 handleUnmark(command, Duchess.tasks);
             } else if (TaskFactory.isTaskCommand(command)) {
-                tasks.add(TaskFactory.createFromCommand(command));
+                handleAddTask(command, Duchess.tasks);
             } else {
                 say("Error: Unrecognised input");
             }
@@ -55,6 +55,20 @@ public class Duchess {
         }
 
         return sb.toString();
+    }
+
+    private static void handleAddTask(String command, ArrayList<Task> tasks) {
+        Task newTask = TaskFactory.createFromCommand(command);
+        tasks.add(newTask);
+        say(String.format(
+                "Got it. I've added this task:\n" +
+                "  %s\n" +
+                "Now you have %s task%s in the list.",
+                newTask,
+                tasks.size(),
+                tasks.size() == 1 ? "" : "s"
+                )
+        );
     }
 
     private static void handleMark(String command, ArrayList<Task> tasks) {
