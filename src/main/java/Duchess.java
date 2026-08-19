@@ -3,7 +3,10 @@ import java.lang.StringBuilder;
 import java.util.Scanner;
 
 public class Duchess {
+    static final ArrayList<String> arr = new ArrayList<>();
+
     public static void main(String[] args) {
+
         say(getGreeting());
 
         Scanner scanner = new Scanner(System.in);
@@ -12,9 +15,12 @@ public class Duchess {
 
             if (command.equalsIgnoreCase("bye")) {
                 break;
+            } else if (command.equalsIgnoreCase("list")) {
+                say(displayList(Duchess.arr));
+            } else {
+                say("added: " + command);
+                arr.add(command);
             }
-
-            say(command);
 
         }
 
