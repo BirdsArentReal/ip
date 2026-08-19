@@ -15,32 +15,28 @@ public class Duchess {
 
         while (true) {
             String command = scanner.nextLine().toLowerCase();
-
-            if (command.equals("bye")) {
+            CommandType type = CommandType.parse(command);
+            if (type == CommandType.BYE) {
                 break;
             }
 
             try {
-                if (command.equals("list")) {
-                    say(duchess.displayList());
-                } else if (command.startsWith("mark ")) {
-                    say(duchess.handleMark(command));
-                } else if (command.startsWith("unmark ")) {
-                    say(duchess.handleUnmark(command));
-                } else if (command.startsWith("delete ")) {
-                    say(duchess.handleDeleteTask(command));
-                }
-                else if (TaskFactory.isTaskCommand(command)) {
-                    say(duchess.handleAddTask(command));
-                } else {
-                    throw new DuchessException(String.format(
+                switch (type) {
+                    case LIST -> {say(duchess.displayList());}
+                    case MARK -> {say(duchess.handleMark(command));}
+                    case UNMARK -> {say(duchess.handleUnmark(command));}
+                    case TODO, DEADLINE, EVENT -> {say(duchess.handleAddTask(command));}
+                    case DELETE -> {say(duchess.handleDeleteTask(command));}
+
+                    default -> {
+                        throw new DuchessException(String.format(
                             "The duchess does not understand what you mean by %s.\n"
-                            + "Please enter valid commands only.",
+                                    + "Please enter valid commands only.",
                             command
-                    ));
+                    ));}
                 }
-            } catch (DuchessException | TaskException d) {
-                say(d.getMessage());
+            } catch (DuchessException | TaskException e) {
+                say(e.getMessage());
             } catch (NumberFormatException n) {
                 say("Error: The command " + command + " only works with valid integers!");
             }

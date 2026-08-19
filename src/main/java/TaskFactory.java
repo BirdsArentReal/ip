@@ -89,13 +89,6 @@ public class TaskFactory {
         return new Event(desc, from, to);
     }
 
-    public static boolean isTaskCommand(String commandLine) {
-        String lower = commandLine.stripLeading().toLowerCase();
-        return lower.startsWith("todo ")
-                || lower.startsWith("deadline ")
-                || lower.startsWith("event ");
-    }
-
     /**
      * Convenience: create a Tasks.Task from a full command line.
      * Recognizes leading keywords: "todo ", "deadline ", "event ".

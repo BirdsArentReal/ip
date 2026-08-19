@@ -1,9 +1,9 @@
 public enum CommandType {
     LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, BYE, UNKNOWN;
 
-    public static CommandType from(String input) {
+    public static CommandType parse(String input) {
         if (input == null) return UNKNOWN;
-        
+
         String s = input.stripLeading().toLowerCase();
         if (s.startsWith("mark ")) return MARK;
         if (s.startsWith("unmark ")) return UNMARK;
