@@ -3,7 +3,7 @@ import java.lang.StringBuilder;
 import java.util.Scanner;
 
 public class Duchess {
-    static final ArrayList<Task> task = new ArrayList<>();
+    static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -18,11 +18,11 @@ public class Duchess {
             }
 
             if (command.equals("list")) {
-                say(displayList(Duchess.task));
+                say(displayList(Duchess.tasks));
             } else if (command.startsWith("mark ")) {
-                handleMark(command, Duchess.task);
+                handleMark(command, Duchess.tasks);
             } else if (command.startsWith("unmark ")) {
-                handleUnmark(command, Duchess.task);
+                handleUnmark(command, Duchess.tasks);
             } else {
                 say("added: " + command);
                 task.add(new Task(command));
@@ -56,28 +56,26 @@ public class Duchess {
         return sb.toString();
     }
 
-    private static void handleMark(String command, ArrayList<Task> items) {
+    private static void handleMark(String command, ArrayList<Task> tasks) {
         String arg = command.substring(5).trim(); // after "mark "
-        Integer idx = Integer.parseInt(arg);
-        if (idx == null || idx < 1 || idx > items.size()) {
+        if (idx < 1 || idx > tasks.size()) {
             say("Invalid task number.");
             return;
         }
-        Task t = items.get(idx - 1);
+        Task t = tasks.get(idx - 1);
         t.mark();
-        say("Nice! I've marked this task as done:\n  " + t.toString());
+        say("Nice! I've marked this task as done:\n  " + t);
     }
 
-    private static void handleUnmark(String command, ArrayList<Task> items) {
+    private static void handleUnmark(String command, ArrayList<Task> tasks) {
         String arg = command.substring(7).trim(); // after "unmark "
-        Integer idx = Integer.parseInt(arg);
-        if (idx == null || idx < 1 || idx > items.size()) {
+        if (idx < 1 || idx > tasks.size()) {
             say("Invalid task number.");
             return;
         }
-        Task t = items.get(idx - 1);
+        Task t = tasks.get(idx - 1);
         t.unmark();
-        say("OK, I've marked this task as not done yet:\n  " + t.toString());
+        say("OK, I've marked this task as not done yet:\n  " + t);
     }
 
     private static String getGreeting() {
@@ -92,13 +90,12 @@ public class Duchess {
     }
 
     private static String getBanner() {
-        return
-                " ____  _   _  _____    _ ____  ___  ___\n"
-                        + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
-                        + "| | | | | | | |  | |__| | |__|  | |  | |\n"
-                        + "| | | | | | | |  |  __  |  __|\\  \\/\\  \\/\n"
-                        + "| |_| | \\_/ | |__| |  | | |__ /\\  \\/\\  \\\n"
-                        + "|____/ \\___/ \\___\\_|  |_|____|\\___/\\___/\n";
+        return    " ____  _   _  _____    _ ____  ___  ___\n"
+                + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
+                + "| | | | | | | |  | |__| | |__|  | |  | |\n"
+                + "| | | | | | | |  |  __  |  __|\\  \\/\\  \\/\n"
+                + "| |_| | \\_/ | |__| |  | | |__ /\\  \\/\\  \\\n"
+                + "|____/ \\___/ \\___\\_|  |_|____|\\___/\\___/\n";
 
     }
 }
