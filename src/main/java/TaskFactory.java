@@ -1,5 +1,6 @@
 import Tasks.Deadline;
 import Tasks.Event;
+import Tasks.Exceptions.TaskException;
 import Tasks.Task;
 import Tasks.ToDo;
 
@@ -8,8 +9,12 @@ public class TaskFactory {
     /**
      * Create a Tasks.ToDo from a description string.
      */
-    private static ToDo createToDo(String description) {
-        return new ToDo(description == null ? "" : description.trim());
+    private static ToDo createToDo(String description) throws TaskException {
+        description = description.trim();
+        if (description.isEmpty()) {
+            throw TaskException.emptyDescription("todo");
+        }
+        return new ToDo(description);
     }
 
     /**
@@ -41,6 +46,7 @@ public class TaskFactory {
         if (rest == null) {
             return new Event("", "", "");
         }
+
         String trimmed = rest.trim();
         int fromIndex = trimmed.indexOf("/from");
         int toIndex = trimmed.indexOf("/to");
@@ -65,9 +71,7 @@ public class TaskFactory {
     }
 
     public static boolean isTaskCommand(String commandLine) {
-        if (commandLine == null) return false;
-        String trimmed = commandLine.trim();
-        String lower = trimmed.toLowerCase();
+        String lower = commandLine.stripLeading().toLowerCase();
         return lower.startsWith("todo ")
                 || lower.startsWith("deadline ")
                 || lower.startsWith("event ");
@@ -78,7 +82,8 @@ public class TaskFactory {
      * Recognizes leading keywords: "todo ", "deadline ", "event ".
      * If none match, returns a Tasks.ToDo with the whole command as description.
      */
-    public static Task createFromCommand(String commandLower) {
+    public static Task createFromCommand(String commandLower) throws TaskException {
+
         if (commandLower.startsWith("todo ")) {
             return createToDo(commandLower.substring(5));
         } else if (commandLower.startsWith("deadline ")) {
@@ -87,7 +92,7 @@ public class TaskFactory {
             return createEvent(commandLower.substring(6));
         } else {
             // fallback: return null
-            return null;
+            throw TaskException.emptyDescription(commandLower);
         }
     }
 }
