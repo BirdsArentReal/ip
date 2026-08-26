@@ -24,12 +24,21 @@ import java.util.Map;
 public class Storage {
     private final Path filePath;
 
-    public Storage() {
+    public Storage() throws IOException {
         this(Path.of("data", "duchess.txt"));
     }
 
-    public Storage(Path filePath) {
+    public Storage(Path filePath) throws IOException {
         this.filePath = filePath;
+
+        Path parentDirectory = filePath.getParent();
+        if (parentDirectory != null) {
+            Files.createDirectories(parentDirectory);
+        }
+
+        if (Files.notExists(filePath)) {
+            Files.createFile(filePath);
+        }
     }
 
     /**
