@@ -22,5 +22,13 @@ public class TaskException extends Exception {
         ));
     }
 
+    public static TaskException unrecognisedCommand(String cmd) {
+        return new TaskException(String.format(
+                "The duchess does not recognise the command: \n"
+                + "  %s",
+                cmd
+        ));
+    }
+
 
 }

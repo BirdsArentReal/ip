@@ -1,20 +1,18 @@
-import Tasks.Deadline;
-import Tasks.Event;
+import Tasks.Exceptions.TaskException;
 import Tasks.Task;
-import Tasks.ToDo;
 
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Handles loading tasks from and saving tasks to a text file.
  *
  * <p>Each task occupies one line in the storage file, using one of these formats:</p>
  * <pre>
- * &lt;isDone&gt; | &lt;description&gt; | T
+ * &lt;isDone&gt; | &lt;description&gt; | T |
  * &lt;isDone&gt; | &lt;description&gt; | D | /by &lt;by&gt;
  * &lt;isDone&gt; | &lt;description&gt; | E | /from &lt;from&gt; /to &lt;to&gt;
  * </pre>
@@ -56,7 +54,7 @@ public class Storage {
      *
      * @param tasks the current task list
      */
-    public void save(List<Task> tasks) {
+    public void save(ArrayList<Task> tasks) {
         // Create the data directory if it does not exist.
 
         ArrayList<String> lines = new ArrayList<>();
@@ -71,14 +69,10 @@ public class Storage {
      * Converts one task to a line that can be stored in the data file.
      *
      * @param task the task to convert
-     * @return a storage line, such as "T | 0 | read book"
+     * @return a storage line, such as "0 | read book | T"
      */
     private String serialize(Task task) {
-        // Example formats:
-        // T | 0 | read book
-        // D | 1 | submit assignment | Friday
-        // E | 0 | team meeting | Monday 2pm | Monday 4pm
-        return "";
+        return task.getStorageFormat();
     }
 
     /**
@@ -87,11 +81,44 @@ public class Storage {
      * @param line one stored task record
      * @return the corresponding task
      */
-    private Task deserialize(String line) {
+    private Task deserialize(String line) throws TaskException {
+        final Map<String, String> charToType = Map.of(
+                "T", "task",
+                "D", "deadline",
+                "E", "event"
+        );
+
         // Split the line using " | ".
-        // Use the first part to determine whether this is a ToDo,
-        // Deadline, or Event.
-        // Use the second part to restore whether it is marked done.
-        return null;
+        String[] items = line.split("\\|");
+
+        // Use the first part to restore whether it is marked done.
+        boolean isDone = items[0].trim().equals("1");
+
+        // Use the third part to determine whether this is a
+        // ToDo, Deadline, or Event.
+        String type = charToType.getOrDefault(items[2].trim(), null);
+
+        // Get the description and any additional information
+        // of the stored line.
+        String desc = items[1].trim();
+        String additional = items[3].trim();
+
+
+        if (type == null) {
+            throw TaskException.unrecognisedCommand(line);
+        }
+
+        Task task = TaskFactory.createFromCommand(String.format(
+                "%s %s %s",
+                type,
+                desc,
+                additional
+        ));
+
+        if (isDone) {
+            task.mark();
+        }
+
+        return task;
     }
 }
