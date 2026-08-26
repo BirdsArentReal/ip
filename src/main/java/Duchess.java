@@ -15,7 +15,8 @@ public class Duchess {
         try {
             duchess = new Duchess();
         } catch (IOException i) {
-            say("Oh no! The duchess was unable to find the file /data/duchess.txt\n"
+            say("Oh no! The duchess was unable to find, nor create,\n"
+                    + "the file /data/duchess.txt\n\n"
                     + "It appears she is unwelcome in the premises. :-(");
             return;
         }
