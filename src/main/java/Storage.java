@@ -115,7 +115,13 @@ public class Storage {
         );
 
         // Split the line using " | ".
-        String[] items = line.split("\\|");
+        // Set limit to -1 so that task splits properly.
+        String[] items = line.split("\\|", -1);
+
+        // Throws error immediately if fewer items than expected
+        if (items.length < 4) {
+            throw TaskException.unrecognisedCommand(line);
+        }
 
         // Use the first part to restore whether it is marked done.
         boolean isDone = items[0].trim().equals("1");
