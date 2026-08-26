@@ -2,9 +2,11 @@ import Tasks.Exceptions.TaskException;
 import Tasks.Task;
 
 import java.awt.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,7 +37,7 @@ public class Storage {
      *
      * @return the saved tasks, or an empty list when there is no data file
      */
-    public ArrayList<Task> load() {
+    public ArrayList<Task> load() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
 
         if (Files.notExists(this.filePath)) {
@@ -45,6 +47,25 @@ public class Storage {
         // Read every line from FILE_PATH.
         // Convert each line back into its corresponding Task object.
         // Add each reconstructed task to tasks.
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(this.filePath);
+        } catch (IOException i) {
+            // explicitly throw IOException,
+            // to make code easier to read,
+            // and edit in the future.
+            throw i;
+        }
+
+        // Add all tasks stored,
+        // skip unrecognised lines
+        for (String line: lines) {
+            try {
+                tasks.add(Storage.deserialize(line));
+            } catch (TaskException t) {
+                // do nothing
+            }
+        }
 
         return tasks;
     }
@@ -71,7 +92,7 @@ public class Storage {
      * @param task the task to convert
      * @return a storage line, such as "0 | read book | T"
      */
-    private String serialize(Task task) {
+    private static String serialize(Task task) {
         return task.getStorageFormat();
     }
 
@@ -81,7 +102,7 @@ public class Storage {
      * @param line one stored task record
      * @return the corresponding task
      */
-    private Task deserialize(String line) throws TaskException {
+    private static Task deserialize(String line) throws TaskException {
         final Map<String, String> charToType = Map.of(
                 "T", "task",
                 "D", "deadline",
