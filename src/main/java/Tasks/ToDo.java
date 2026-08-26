@@ -12,6 +12,6 @@ public class ToDo extends Task {
 
     @Override
     public String getStorageFormat() {
-        return String.format("%s | T", super.getStorageFormat());
+        return String.format("%s | T |", super.getStorageFormat());
     }
 }
