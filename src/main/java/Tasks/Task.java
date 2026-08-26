@@ -27,6 +27,6 @@ public abstract class Task {
     }
 
     public String getStorageFormat(){
-        return done ? "1 | " : "0 | " + description;
+        return (done ? "1 | " : "0 | ") + description;
     }
 }
