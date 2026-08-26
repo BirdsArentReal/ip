@@ -25,4 +25,8 @@ public abstract class Task {
     public String toString() {
         return (done ? "[X] " : "[ ] ") + description;
     }
+
+    public String getStorageFormat(){
+        return done ? "1 | " : "0 | " + description;
+    }
 }

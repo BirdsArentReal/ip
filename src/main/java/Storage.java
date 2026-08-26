@@ -11,6 +11,15 @@ import java.util.List;
 
 /**
  * Handles loading tasks from and saving tasks to a text file.
+ *
+ * <p>Each task occupies one line in the storage file, using one of these formats:</p>
+ * <pre>
+ * &lt;isDone&gt; | &lt;description&gt; | T
+ * &lt;isDone&gt; | &lt;description&gt; | D | &lt;by&gt;
+ * &lt;isDone&gt; | &lt;description&gt; | E | &lt;from&gt; | &lt;to&gt;
+ * </pre>
+ *
+ * <p>{@code isDone} is {@code 0} for an incomplete task and {@code 1} for a completed task.</p>
  */
 public class Storage {
     private final Path filePath;

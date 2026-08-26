@@ -9,4 +9,9 @@ public class ToDo extends Task {
     public String toString() {
         return "[T]" + super.toString();
     }
+
+    @Override
+    public String getStorageFormat() {
+        return String.format("%s | T", super.getStorageFormat());
+    }
 }

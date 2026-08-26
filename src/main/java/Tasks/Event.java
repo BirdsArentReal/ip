@@ -20,4 +20,12 @@ public class Event extends Task {
                 super.toString(),
                 this.getPeriod());
     }
+
+    @Override
+    public String getStorageFormat() {
+        return String.format("%s | E | %s | %s",
+                super.getStorageFormat(),
+                this.from,
+                this.to);
+    }
 }

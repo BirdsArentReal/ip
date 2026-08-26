@@ -16,4 +16,9 @@ public class Deadline extends Task {
                 super.toString(),
                 byPart);
     }
+
+    @Override
+    public String getStorageFormat() {
+        return String.format("%s | D | %s", super.getStorageFormat(), this.by);
+    }
 }
