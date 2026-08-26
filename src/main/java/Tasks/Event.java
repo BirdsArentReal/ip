@@ -10,10 +10,6 @@ public class Event extends Task {
         this.to = to;
     }
 
-    private String getPeriod() {
-        return String.format("(from: %s to: %s)", this.from, this.to);
-    }
-
     @Override
     public String toString() {
         return String.format("[E]%s (from: %s to: %s)",

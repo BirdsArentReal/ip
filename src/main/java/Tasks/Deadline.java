@@ -10,11 +10,9 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        String byPart = (by != null && !by.isEmpty()) ? String.format(" (by: %s)", by) : "";
-
         return String.format("[D]%s%s",
                 super.toString(),
-                byPart);
+                this.by);
     }
 
     @Override
