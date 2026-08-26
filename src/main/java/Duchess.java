@@ -45,7 +45,9 @@ public class Duchess {
                     ));}
                 }
 
-                duchess.saveState();
+                if (CommandType.isMutator(type)) {
+                    duchess.saveState();
+                }
 
             } catch (DuchessException | TaskException e) {
                 say(e.getMessage());

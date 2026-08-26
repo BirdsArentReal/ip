@@ -17,4 +17,15 @@ public enum CommandType {
         if (s.equals("bye")) return BYE;
         return UNKNOWN;
     }
+
+    public static boolean isMutator(CommandType type) {
+        return switch (type) {
+            // mutators
+            case MARK, UNMARK, DELETE,
+                 TODO, DEADLINE, EVENT -> true;
+
+            // not mutators
+            case LIST, UNKNOWN, BYE -> false;
+        };
+    }
 }
