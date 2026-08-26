@@ -24,7 +24,7 @@ public class Event extends Task {
 
     @Override
     public String getStorageFormat() {
-        return String.format("%s | E | %s | %s",
+        return String.format("%s | E | /from %s /to %s",
                 super.getStorageFormat(),
                 this.from,
                 this.to);
