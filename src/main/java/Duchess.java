@@ -1,6 +1,7 @@
 import Tasks.Exceptions.TaskException;
 import Tasks.Task;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.lang.StringBuilder;
 import java.util.Scanner;
@@ -10,7 +11,16 @@ public class Duchess {
 
         say(getGreeting());
 
-        Duchess duchess = new Duchess();
+        Duchess duchess;
+        try {
+            duchess = new Duchess();
+        } catch (IOException i) {
+            say("Oh no! The duchess was unable to find, nor create,\n"
+                    + "the file /data/duchess.txt\n\n"
+                    + "It appears she is unwelcome in the premises. :-(");
+            return;
+        }
+
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -27,18 +37,28 @@ public class Duchess {
                     case UNMARK -> {say(duchess.handleUnmark(command));}
                     case TODO, DEADLINE, EVENT -> {say(duchess.handleAddTask(command));}
                     case DELETE -> {say(duchess.handleDeleteTask(command));}
-
                     default -> {
                         throw new DuchessException(String.format(
-                            "The duchess does not understand what you mean by %s.\n"
-                                    + "Please enter valid commands only.",
-                            command
+                                "The duchess does not understand what you mean by %s.\n"
+                                        + "Please enter valid commands only.",
+                                command
                     ));}
                 }
+
+                if (CommandType.isMutator(type)) {
+                    duchess.saveState();
+                }
+
             } catch (DuchessException | TaskException e) {
                 say(e.getMessage());
             } catch (NumberFormatException n) {
-                say("Error: The command " + command + " only works with valid integers!");
+                say("Error: The command " + command +
+                        " only works with valid integers!");
+            } catch (IOException e) {
+                say("Oh no! The duchess has caught the goldfish syndrome! \n"
+                        + "She is unable to remember your current list. \n"
+                        + "Please check out /data/duchess.txt as soon as possible!"
+                );
             }
 
 
@@ -50,9 +70,11 @@ public class Duchess {
 
 
     final ArrayList<Task> tasks;
+    final Storage db;
 
-    Duchess() {
-        this.tasks = new ArrayList<>();
+    Duchess() throws IOException {
+        this.db = new Storage();
+        this.tasks = db.load();
     }
 
     private static void say(String message) {
@@ -62,6 +84,10 @@ public class Duchess {
         System.out.println(separator);
         System.out.println(message);
         System.out.println(separator);
+    }
+
+    private void saveState() throws IOException {
+        this.db.save(this.tasks);
     }
 
     private String displayList() {

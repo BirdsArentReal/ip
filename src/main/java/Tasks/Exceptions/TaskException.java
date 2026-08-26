@@ -14,11 +14,19 @@ public class TaskException extends Exception {
 
     public static TaskException missingField(String command, String fieldName) {
         return new TaskException(String.format(
-           "The %s command requires a %s field.\n"
+                "The %s command requires a %s field.\n"
                 + "Please re-enter your command with /%s [date].",
                 command,
                 fieldName,
                 fieldName
+        ));
+    }
+
+    public static TaskException unrecognisedCommand(String cmd) {
+        return new TaskException(String.format(
+                "The duchess does not recognise the command: \n"
+                + "  %s",
+                cmd
         ));
     }
 

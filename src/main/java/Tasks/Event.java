@@ -10,14 +10,19 @@ public class Event extends Task {
         this.to = to;
     }
 
-    private String getPeriod() {
-        return String.format("(from: %s to: %s)", this.from, this.to);
+    @Override
+    public String toString() {
+        return String.format("[E]%s (from: %s to: %s)",
+                super.toString(),
+                this.from,
+                this.to);
     }
 
     @Override
-    public String toString() {
-        return String.format("[E]%s %s",
-                super.toString(),
-                this.getPeriod());
+    public String getStorageFormat() {
+        return String.format("%s | E | /from %s /to %s",
+                super.getStorageFormat(),
+                this.from,
+                this.to);
     }
 }
