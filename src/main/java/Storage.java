@@ -75,15 +75,12 @@ public class Storage {
      *
      * @param tasks the current task list
      */
-    public void save(ArrayList<Task> tasks) {
-        // Create the data directory if it does not exist.
-
-        ArrayList<String> lines = new ArrayList<>();
-        for (Task task : tasks) {
-            lines.add(serialize(task));
-        }
+    public void save(ArrayList<Task> tasks) throws IOException {
+        // convert tasks to strings for storage
+        List<String> lines = tasks.stream().map(Storage::serialize).toList();
 
         // Write lines to FILE_PATH, replacing the previous contents.
+        Files.write(this.filePath, lines);
     }
 
     /**
