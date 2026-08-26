@@ -103,8 +103,8 @@ public class TaskFactory {
         } else if (commandLower.startsWith("event ")) {
             return createEvent(commandLower.substring(6));
         } else {
-            // fallback: return null
-            throw TaskException.emptyDescription(commandLower);
+            // Unrecognised command type
+            throw TaskException.unrecognisedCommand(commandLower);
         }
     }
 }
