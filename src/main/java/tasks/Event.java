@@ -1,4 +1,6 @@
-package Tasks;
+package tasks;
+
+import java.time.LocalDate;
 
 public class Event extends Task {
     private final String from;

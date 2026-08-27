@@ -1,8 +1,9 @@
-import Tasks.Deadline;
-import Tasks.Event;
-import Tasks.Exceptions.TaskException;
-import Tasks.Task;
-import Tasks.ToDo;
+import tasks.DateFormat;
+import tasks.Task;
+import tasks.ToDo;
+import tasks.Deadline;
+import tasks.Event;
+import tasks.exceptions.TaskException;
 
 public class TaskFactory {
 

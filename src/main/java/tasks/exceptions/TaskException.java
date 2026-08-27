@@ -1,4 +1,4 @@
-package Tasks.Exceptions;
+package tasks.exceptions;
 
 public class TaskException extends Exception {
     private TaskException(String message) {
