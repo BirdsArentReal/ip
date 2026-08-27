@@ -16,7 +16,7 @@ public class TaskException extends Exception {
         return new TaskException(String.format(
                 "Your command contains invalid characters! \n"
                 + "Invalid Characters: %s\n"
-                + "Your command:",
+                + "Your command: %s",
                 invalidChars,
                 cmd
         ));
