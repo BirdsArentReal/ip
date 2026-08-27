@@ -1,9 +1,6 @@
-import tasks.DateFormat;
-import tasks.Task;
-import tasks.ToDo;
-import tasks.Deadline;
-import tasks.Event;
-import tasks.exceptions.TaskException;
+package duchess.tasks;
+
+import duchess.tasks.exceptions.TaskException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

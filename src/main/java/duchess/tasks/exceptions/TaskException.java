@@ -1,4 +1,4 @@
-package tasks.exceptions;
+package duchess.tasks.exceptions;
 
 public class TaskException extends Exception {
     private TaskException(String message) {
