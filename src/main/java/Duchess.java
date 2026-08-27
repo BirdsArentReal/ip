@@ -1,5 +1,5 @@
-import Tasks.Exceptions.TaskException;
-import Tasks.Task;
+import tasks.exceptions.TaskException;
+import tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,5 +1,5 @@
-import Tasks.Exceptions.TaskException;
-import Tasks.Task;
+import tasks.exceptions.TaskException;
+import tasks.Task;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -109,7 +109,7 @@ public class Storage {
      */
     private static Task deserialize(String line) throws TaskException {
         final Map<String, String> charToType = Map.of(
-                "T", "task",
+                "T", "todo",
                 "D", "deadline",
                 "E", "event"
         );
@@ -120,7 +120,7 @@ public class Storage {
 
         // Throws error immediately if fewer items than expected
         if (items.length < 4) {
-            throw TaskException.unrecognisedCommand(line);
+            throw TaskException.declareUnrecognisedCommand(line);
         }
 
         // Use the first part to restore whether it is marked done.
@@ -137,7 +137,7 @@ public class Storage {
 
 
         if (type == null) {
-            throw TaskException.unrecognisedCommand(line);
+            throw TaskException.declareUnrecognisedCommand(line);
         }
 
         Task task = TaskFactory.createFromCommand(String.format(
