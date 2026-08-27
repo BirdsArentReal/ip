@@ -5,6 +5,9 @@ import tasks.Deadline;
 import tasks.Event;
 import tasks.exceptions.TaskException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 public class TaskFactory {
 
     /**
@@ -13,7 +16,7 @@ public class TaskFactory {
     private static ToDo createToDo(String description) throws TaskException {
         description = description.trim();
         if (description.isEmpty()) {
-            throw TaskException.emptyDescription("todo");
+            throw TaskException.declareEmptyDescription("todo");
         }
         return new ToDo(description);
     }
@@ -25,22 +28,22 @@ public class TaskFactory {
      */
     private static Deadline createDeadline(String rest) throws TaskException {
         if (rest.isEmpty()) {
-            throw TaskException.emptyDescription("deadline");
+            throw TaskException.declareEmptyDescription("deadline");
         }
 
         int byIndex = rest.trim().indexOf("/by");
 
         if (byIndex < 0) {
-            throw TaskException.missingField("deadline", "by");
+            throw TaskException.declareMissingField("deadline", "by");
         }
 
         String desc = rest.substring(0, byIndex).trim();
         String by = rest.substring(byIndex + 3).trim();
 
         if (desc.isEmpty()) {
-            throw TaskException.emptyDescription("deadline");
+            throw TaskException.declareEmptyDescription("deadline");
         } else if (by.isEmpty()) {
-            throw TaskException.missingField("deadline", "by");
+            throw TaskException.declareMissingField("deadline", "by");
         }
 
         return new Deadline(desc, by);
@@ -54,7 +57,7 @@ public class TaskFactory {
     private static Event createEvent(String rest) throws TaskException {
         if (rest.isEmpty()) {
             // empty description
-            throw TaskException.emptyDescription("event");
+            throw TaskException.declareEmptyDescription("event");
         }
 
         String trimmed = rest.trim();
@@ -62,9 +65,9 @@ public class TaskFactory {
         int toIndex = trimmed.indexOf("/to");
 
         if (fromIndex < 0) {
-            throw TaskException.missingField("event", "from");
+            throw TaskException.declareMissingField("event", "from");
         } else if (toIndex < 0) {
-            throw TaskException.missingField("event", "to");
+            throw TaskException.declareMissingField("event", "to");
         }
 
         String desc, from, to;
@@ -80,11 +83,11 @@ public class TaskFactory {
         }
 
         if (desc.isEmpty()) {
-            throw TaskException.emptyDescription("event");
+            throw TaskException.declareEmptyDescription("event");
         } else if (from.isEmpty()) {
-            throw TaskException.missingField("event", "from");
+            throw TaskException.declareMissingField("event", "from");
         } else if (to.isEmpty()) {
-            throw TaskException.missingField("event", "to");
+            throw TaskException.declareMissingField("event", "to");
         }
 
         return new Event(desc, from, to);
@@ -105,7 +108,7 @@ public class TaskFactory {
             return createEvent(commandLower.substring(6));
         } else {
             // Unrecognised command type
-            throw TaskException.unrecognisedCommand(commandLower);
+            throw TaskException.declareUnrecognisedCommand(commandLower);
         }
     }
 }
