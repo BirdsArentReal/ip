@@ -1,10 +1,17 @@
-import tasks.exceptions.TaskException;
-import tasks.Task;
+package duchess.ui;
+
+import duchess.io.Storage;
+import duchess.tasks.TaskFactory;
+import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.lang.StringBuilder;
 import java.util.Scanner;
+
+import duchess.parse.CommandType;
+import duchess.ui.exceptions.DuchessException;
 
 public class Duchess {
     public static void main(String[] args) {

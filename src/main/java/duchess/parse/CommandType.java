@@ -1,3 +1,5 @@
+package duchess.parse;
+
 public enum CommandType {
     LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, BYE, UNKNOWN;
 

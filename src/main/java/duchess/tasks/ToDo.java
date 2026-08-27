@@ -1,4 +1,4 @@
-package tasks;
+package duchess.tasks;
 
 public class ToDo extends Task {
     public ToDo(String description) {

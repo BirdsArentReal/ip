@@ -1,4 +1,4 @@
-package tasks;
+package duchess.tasks;
 
 public abstract class Task {
 
