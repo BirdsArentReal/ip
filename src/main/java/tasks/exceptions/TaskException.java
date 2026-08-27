@@ -22,11 +22,30 @@ public class TaskException extends Exception {
         ));
     }
 
-    public static TaskException unrecognisedCommand(String cmd) {
+    public static TaskException declareUnrecognisedCommand(String cmd) {
         return new TaskException(String.format(
-                "The duchess does not recognise the command: \n"
+                "The duchess does not recognise the task: \n"
                 + "  %s",
                 cmd
+        ));
+    }
+
+    public static TaskException declareInvalidDateFormat(String dateStr) {
+        return new TaskException(String.format(
+                "The date \"%s\" is not in a valid format. \n"
+                + " Please enter your date in yyyy-MM-dd format.",
+                dateStr
+        ));
+    }
+
+    public static TaskException declareInvalidDateRange(String from, String to) {
+        return new TaskException(String.format(
+                "Your event starts from %s, \n"
+                + "which is after its end date of %s.\n"
+                + "Please enter a valid date range, as the duchess\n"
+                + "is not a time traveller.",
+                from,
+                to
         ));
     }
 

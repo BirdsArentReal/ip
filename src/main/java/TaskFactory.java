@@ -11,6 +11,18 @@ import java.time.format.DateTimeParseException;
 public class TaskFactory {
 
     /**
+     *
+     */
+    private static LocalDate parseDate(String dateStr) throws TaskException {
+        try {
+            return LocalDate.parse(dateStr, DateFormat.PARSE_FORMAT);
+        } catch (DateTimeParseException e) {
+            throw TaskException.declareInvalidDateFormat(dateStr);
+        }
+    }
+
+
+    /**
      * Create a Tasks.ToDo from a description string.
      */
     private static ToDo createToDo(String description) throws TaskException {
@@ -38,15 +50,16 @@ public class TaskFactory {
         }
 
         String desc = rest.substring(0, byIndex).trim();
-        String by = rest.substring(byIndex + 3).trim();
+        String byString = rest.substring(byIndex + 3).trim();
 
         if (desc.isEmpty()) {
             throw TaskException.declareEmptyDescription("deadline");
-        } else if (by.isEmpty()) {
+        } else if (byString.isEmpty()) {
             throw TaskException.declareMissingField("deadline", "by");
         }
 
-        return new Deadline(desc, by);
+        // this might throw TaskException.declareInvalidDateFormat()
+        return new Deadline(desc, TaskFactory.parseDate(byString));
     }
 
     /**
@@ -70,24 +83,33 @@ public class TaskFactory {
             throw TaskException.declareMissingField("event", "to");
         }
 
-        String desc, from, to;
+        String desc, fromStr, toStr;
 
         if (toIndex < fromIndex) {
             desc = trimmed.substring(0, toIndex).trim();
-            from = trimmed.substring(fromIndex + 5).trim();
-            to = trimmed.substring(toIndex + 3, fromIndex).trim();
+            fromStr = trimmed.substring(fromIndex + 5).trim();
+            toStr = trimmed.substring(toIndex + 3, fromIndex).trim();
         } else {
             desc = trimmed.substring(0, fromIndex).trim();
-            from = trimmed.substring(fromIndex + 5, toIndex).trim();
-            to = trimmed.substring(toIndex + 3).trim();
+            fromStr = trimmed.substring(fromIndex + 5, toIndex).trim();
+            toStr = trimmed.substring(toIndex + 3).trim();
         }
 
         if (desc.isEmpty()) {
             throw TaskException.declareEmptyDescription("event");
-        } else if (from.isEmpty()) {
+        } else if (fromStr.isEmpty()) {
             throw TaskException.declareMissingField("event", "from");
-        } else if (to.isEmpty()) {
+        } else if (toStr.isEmpty()) {
             throw TaskException.declareMissingField("event", "to");
+        }
+
+        // these are separated from return because they might
+        // throw TaskException.declareInvalidDateFormat
+        LocalDate from = TaskFactory.parseDate(fromStr);
+        LocalDate to = TaskFactory.parseDate(toStr);
+
+        if (from.isAfter(to)) {
+            throw TaskException.declareInvalidDateRange(fromStr, toStr);
         }
 
         return new Event(desc, from, to);

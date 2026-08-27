@@ -3,10 +3,10 @@ package tasks;
 import java.time.LocalDate;
 
 public class Event extends Task {
-    private final String from;
-    private final String to;
+    private final LocalDate from;
+    private final LocalDate to;
 
-    public Event(String description, String from, String to) {
+    public Event(String description, LocalDate from, LocalDate to) {
         super(description);
         this.from = from;
         this.to = to;
@@ -16,15 +16,15 @@ public class Event extends Task {
     public String toString() {
         return String.format("[E]%s (from: %s to: %s)",
                 super.toString(),
-                this.from,
-                this.to);
+                this.from.format(DateFormat.DISPLAY_FORMAT),
+                this.to.format(DateFormat.DISPLAY_FORMAT));
     }
 
     @Override
     public String getStorageFormat() {
         return String.format("%s | E | /from %s /to %s",
                 super.getStorageFormat(),
-                this.from,
-                this.to);
+                this.from.format(DateFormat.PARSE_FORMAT),
+                this.to.format(DateFormat.PARSE_FORMAT));
     }
 }
