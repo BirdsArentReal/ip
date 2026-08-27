@@ -7,12 +7,11 @@ import tasks.exceptions.TaskException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
 public class TaskFactory {
+    private static final char[] INVALID_CHARACTERS = new char[]{'|'};
 
-    /**
-     *
-     */
     private static LocalDate parseDate(String dateStr) throws TaskException {
         try {
             return LocalDate.parse(dateStr, DateFormat.PARSE_FORMAT);
@@ -115,12 +114,26 @@ public class TaskFactory {
         return new Event(desc, from, to);
     }
 
+    private static boolean containsInvalidCharacters(String cmd) {
+        for (char c : TaskFactory.INVALID_CHARACTERS) {
+            if (cmd.indexOf(c) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Convenience: create a Tasks.Task from a full command line.
      * Recognizes leading keywords: "todo ", "deadline ", "event ".
      * If none match, returns a Tasks.ToDo with the whole command as description.
      */
     public static Task createFromCommand(String commandLower) throws TaskException {
+        if (TaskFactory.containsInvalidCharacters(commandLower)) {
+            throw TaskException.declareInvalidCharacters(
+                    commandLower,
+                    Arrays.toString(TaskFactory.INVALID_CHARACTERS));
+        }
 
         if (commandLower.startsWith("todo ")) {
             return createToDo(commandLower.substring(5));

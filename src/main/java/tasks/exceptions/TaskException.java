@@ -12,6 +12,16 @@ public class TaskException extends Exception {
         ));
     }
 
+    public static TaskException declareInvalidCharacters(String cmd, String invalidChars) {
+        return new TaskException(String.format(
+                "Your command contains invalid characters! \n"
+                + "Invalid Characters: %s\n"
+                + "Your command:",
+                invalidChars,
+                cmd
+        ));
+    }
+
     public static TaskException declareMissingField(String command, String fieldName) {
         return new TaskException(String.format(
                 "The %s command requires a %s field.\n"
