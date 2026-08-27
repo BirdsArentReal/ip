@@ -109,7 +109,7 @@ public class Storage {
      */
     private static Task deserialize(String line) throws TaskException {
         final Map<String, String> charToType = Map.of(
-                "T", "task",
+                "T", "todo",
                 "D", "deadline",
                 "E", "event"
         );
