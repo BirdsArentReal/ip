@@ -1,6 +1,7 @@
 package duchess.io;
 
 import duchess.tasks.TaskFactory;
+import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.TaskException;
 import duchess.tasks.Task;
 
@@ -86,22 +87,9 @@ public class Storage {
      *
      * @param tasks the current task list
      */
-    public void save(ArrayList<Task> tasks) throws IOException {
-        // convert tasks to strings for storage
-        List<String> lines = tasks.stream().map(Storage::serialize).toList();
-
+    public void save(TaskList tasks) throws IOException {
         // Write lines to FILE_PATH, replacing the previous contents.
-        Files.write(this.filePath, lines);
-    }
-
-    /**
-     * Converts one task to a line that can be stored in the data file.
-     *
-     * @param task the task to convert
-     * @return a storage line, such as "0 | read book | T"
-     */
-    private static String serialize(Task task) {
-        return task.getStorageFormat();
+        Files.write(this.filePath, tasks.getStorageFormat());
     }
 
     /**

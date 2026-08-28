@@ -2,6 +2,7 @@ package duchess.ui;
 
 import duchess.io.Storage;
 import duchess.tasks.TaskFactory;
+import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.TaskException;
 import duchess.tasks.Task;
 
@@ -42,14 +43,13 @@ public class Duchess {
     // 40 underscores
     private static final String separator = "*________________________________________*";
 
-
-    private final ArrayList<Task> tasks;
+    private final TaskList tasks;
     private final Storage db;
     private final Ui ui;
 
     Duchess() throws IOException {
         this.db = new Storage();
-        this.tasks = db.load();
+        this.tasks = new TaskList(db.load());
         this.ui = new Ui(Duchess.name, Duchess.banner, Duchess.separator);
     }
 
@@ -93,8 +93,6 @@ public class Duchess {
                         + "Please check out /data/duchess.txt as soon as possible!"
                 );
             }
-
-
         }
 
         this.exit();
@@ -113,74 +111,30 @@ public class Duchess {
     }
 
     private String displayList() {
-        if (tasks.isEmpty()) {
-            return "You have no tasks pending.";
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tasks.size(); i++) {
-            sb.append(" ").append(i + 1).append(". ").append(tasks.get(i));
-            if (i < tasks.size() - 1) {
-                sb.append("\n");
-            }
-        }
-
-        return sb.toString();
+        return this.tasks.getTasksToPrint();
     }
 
     private String handleAddTask(String command) throws TaskException {
         Task newTask = TaskFactory.createFromCommand(command);
-        tasks.add(newTask);
-
-        return String.format(
-                "Got it. I've added this task:\n" +
-                "  %s\n" +
-                "Now you have %s task%s in the list.",
-                newTask,
-                tasks.size(),
-                tasks.size() == 1 ? "" : "s"
-        );
+        return this.tasks.addTask(newTask);
     }
 
     private String handleDeleteTask(String command) {
         String arg = command.substring(7).trim(); // after "delete "
         int idx = Integer.parseInt(arg);
-        if (idx < 1 || idx > tasks.size()) {
-            return "Invalid task number.";
-        }
-        Task t = tasks.remove(idx - 1);
-        return String.format(
-                "Noted. I've removed this task:\n"
-                + "%s\n"
-                + "Now you have %d task%s in the list.",
-                t,
-                tasks.size(),
-                tasks.size() == 1 ? "" : "s"
-        );
+        return this.tasks.deleteTaskFromIndex(idx);
     }
 
     private String handleMark(String command) {
         String arg = command.substring(5).trim(); // after "mark "
         int idx = Integer.parseInt(arg);
-        if (idx < 1 || idx > tasks.size()) {
-            return "Invalid task number.";
-
-        }
-        Task t = tasks.get(idx - 1);
-        t.mark();
-        return "Nice! I've marked this task as done:\n  " + t;
+        return this.tasks.markTaskAt(idx);
     }
 
     private String handleUnmark(String command) {
         String arg = command.substring(7).trim(); // after "unmark "
         int idx = Integer.parseInt(arg);
-        if (idx < 1 || idx > tasks.size()) {
-            return "Invalid task number.";
-
-        }
-        Task t = tasks.get(idx - 1);
-        t.unmark();
-        return ("OK, I've marked this task as not done yet:\n  " + t);
+        return this.tasks.unmarkTaskAt(idx);
     }
 
 
