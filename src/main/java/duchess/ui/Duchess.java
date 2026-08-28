@@ -25,50 +25,9 @@ public class Duchess {
             return;
         }
 
-        duchess.greet();
-
-        while (true) {
-            String command = duchess.ui.listen();
-            CommandType type = CommandType.parse(command);
-            if (type == CommandType.BYE) {
-                break;
-            }
-
-            try {
-                String response = switch (type) {
-                    case LIST -> duchess.displayList();
-                    case MARK -> duchess.handleMark(command);
-                    case UNMARK -> duchess.handleUnmark(command);
-                    case TODO, DEADLINE, EVENT -> duchess.handleAddTask(command);
-                    case DELETE -> duchess.handleDeleteTask(command);
-                    default -> throw new DuchessException(String.format(
-                            "The duchess does not understand what you mean by %s.\n"
-                                    + "Please enter valid commands only.",
-                            command));
-                };
-
-                duchess.ui.say(response);
-
-                if (CommandType.isMutator(type)) {
-                    duchess.saveState();
-                }
-
-            } catch (DuchessException | TaskException e) {
-                duchess.ui.say(e.getMessage());
-            } catch (NumberFormatException n) {
-                duchess.ui.say("Error: The command " + command +
-                        " only works with valid integers!");
-            } catch (IOException e) {
-                duchess.ui.say("Oh no! The duchess has caught the goldfish syndrome! \n"
-                        + "She is unable to remember your current list. \n"
-                        + "Please check out /data/duchess.txt as soon as possible!"
-                );
-            }
+        duchess.run();
 
 
-        }
-
-        duchess.exit();
     }
 
     private static final String banner =
@@ -92,6 +51,53 @@ public class Duchess {
         this.db = new Storage();
         this.tasks = db.load();
         this.ui = new Ui(Duchess.name, Duchess.banner, Duchess.separator);
+    }
+
+    public void run() {
+        this.greet();
+
+        while (true) {
+            String command = this.ui.listen();
+            CommandType type = CommandType.parse(command);
+            if (type == CommandType.BYE) {
+                break;
+            }
+
+            try {
+                String response = switch (type) {
+                    case LIST -> this.displayList();
+                    case MARK -> this.handleMark(command);
+                    case UNMARK -> this.handleUnmark(command);
+                    case TODO, DEADLINE, EVENT -> this.handleAddTask(command);
+                    case DELETE -> this.handleDeleteTask(command);
+                    default -> throw new DuchessException(String.format(
+                            "The duchess does not understand what you mean by %s.\n"
+                                    + "Please enter valid commands only.",
+                            command));
+                };
+
+                this.ui.say(response);
+
+                if (CommandType.isMutator(type)) {
+                    this.saveState();
+                }
+
+            } catch (DuchessException | TaskException e) {
+                this.ui.say(e.getMessage());
+            } catch (NumberFormatException n) {
+                this.ui.say("Error: The command " + command +
+                        " only works with valid integers!");
+            } catch (IOException e) {
+                this.ui.say("Oh no! The duchess has caught the goldfish syndrome! \n"
+                        + "She is unable to remember your current list. \n"
+                        + "Please check out /data/duchess.txt as soon as possible!"
+                );
+            }
+
+
+        }
+
+        this.exit();
     }
 
     private void greet() {
