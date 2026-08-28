@@ -15,54 +15,51 @@ import duchess.ui.exceptions.DuchessException;
 
 public class Duchess {
     public static void main(String[] args) {
-
-        say(getGreeting());
-
         Duchess duchess;
         try {
             duchess = new Duchess();
         } catch (IOException i) {
-            say("Oh no! The duchess was unable to find, nor create,\n"
+            System.out.println("Oh no! The duchess was unable to find, nor create,\n"
                     + "the file /data/duchess.txt\n\n"
                     + "It appears she is unwelcome in the premises. :-(");
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
+        duchess.greet();
 
         while (true) {
-            String command = scanner.nextLine().toLowerCase();
+            String command = duchess.ui.listen();
             CommandType type = CommandType.parse(command);
             if (type == CommandType.BYE) {
                 break;
             }
 
             try {
-                switch (type) {
-                    case LIST -> {say(duchess.displayList());}
-                    case MARK -> {say(duchess.handleMark(command));}
-                    case UNMARK -> {say(duchess.handleUnmark(command));}
-                    case TODO, DEADLINE, EVENT -> {say(duchess.handleAddTask(command));}
-                    case DELETE -> {say(duchess.handleDeleteTask(command));}
-                    default -> {
-                        throw new DuchessException(String.format(
-                                "The duchess does not understand what you mean by %s.\n"
-                                        + "Please enter valid commands only.",
-                                command
-                    ));}
-                }
+                String response = switch (type) {
+                    case LIST -> duchess.displayList();
+                    case MARK -> duchess.handleMark(command);
+                    case UNMARK -> duchess.handleUnmark(command);
+                    case TODO, DEADLINE, EVENT -> duchess.handleAddTask(command);
+                    case DELETE -> duchess.handleDeleteTask(command);
+                    default -> throw new DuchessException(String.format(
+                            "The duchess does not understand what you mean by %s.\n"
+                                    + "Please enter valid commands only.",
+                            command));
+                };
+
+                duchess.ui.say(response);
 
                 if (CommandType.isMutator(type)) {
                     duchess.saveState();
                 }
 
             } catch (DuchessException | TaskException e) {
-                say(e.getMessage());
+                duchess.ui.say(e.getMessage());
             } catch (NumberFormatException n) {
-                say("Error: The command " + command +
+                duchess.ui.say("Error: The command " + command +
                         " only works with valid integers!");
             } catch (IOException e) {
-                say("Oh no! The duchess has caught the goldfish syndrome! \n"
+                duchess.ui.say("Oh no! The duchess has caught the goldfish syndrome! \n"
                         + "She is unable to remember your current list. \n"
                         + "Please check out /data/duchess.txt as soon as possible!"
                 );
@@ -71,26 +68,38 @@ public class Duchess {
 
         }
 
-        say(getExitMessage());
-        scanner.close();
+        duchess.exit();
     }
 
+    private static final String banner =
+            " ____  _   _  _____    _ ____  ___  ___\n"
+            + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
+            + "| | | | | | | |  | |__| | |__|  | |  | |\n"
+            + "| | | | | | | |  |  __  |  __|\\  \\/\\  \\/\n"
+            + "| |_| | \\_/ | |__| |  | | |__ /\\  \\/\\  \\\n"
+            + "|____/ \\___/ \\___\\_|  |_|____|\\___/\\___/\n";
+    private static final String name = "Duchess";
 
-    final ArrayList<Task> tasks;
-    final Storage db;
+    // 40 underscores
+    private static final String separator = "*________________________________________*";
+
+
+    private final ArrayList<Task> tasks;
+    private final Storage db;
+    private final Ui ui;
 
     Duchess() throws IOException {
         this.db = new Storage();
         this.tasks = db.load();
+        this.ui = new Ui(Duchess.name, Duchess.banner, Duchess.separator);
     }
 
-    private static void say(String message) {
-        // 40 underscores
-        final String separator = "*________________________________________*";
+    private void greet() {
+        this.ui.greet();
+    }
 
-        System.out.println(separator);
-        System.out.println(message);
-        System.out.println(separator);
+    private void exit() {
+        this.ui.exit();
     }
 
     private void saveState() throws IOException {
@@ -124,7 +133,6 @@ public class Duchess {
                 newTask,
                 tasks.size(),
                 tasks.size() == 1 ? "" : "s"
-
         );
     }
 
@@ -169,25 +177,5 @@ public class Duchess {
         return ("OK, I've marked this task as not done yet:\n  " + t);
     }
 
-    private static String getExitMessage() {
-        return "Bye! Hope to see you again soon!";
-    }
 
-    private static String getBanner() {
-        return
-                " ____  _   _  _____    _ ____  ___  ___\n"
-                + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
-                + "| | | | | | | |  | |__| | |__|  | |  | |\n"
-                + "| | | | | | | |  |  __  |  __|\\  \\/\\  \\/\n"
-                + "| |_| | \\_/ | |__| |  | | |__ /\\  \\/\\  \\\n"
-                + "|____/ \\___/ \\___\\_|  |_|____|\\___/\\___/\n";
-
-    }
-
-    private static String getGreeting() {
-        final String name = "Duchess";
-        return getBanner()
-                + "Hello! I am " + name + ". \n"
-                + "What can I do for you?";
-    }
 }
