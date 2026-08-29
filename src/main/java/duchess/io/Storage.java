@@ -27,10 +27,14 @@ import java.util.Map;
 public class Storage {
     private final Path filePath;
 
-    public Storage() throws IOException {
-        this(Path.of("data", "duchess.txt"));
-    }
-
+    /**
+     * Creates a storage handler that saves data in filePath.
+     * If the file or directory doesn't exist, create it.
+     *
+     * @param filePath The location of the file to save to.
+     * @throws IOException If the file doesn't exist and couldn't
+     *                      be created.
+     */
     public Storage(Path filePath) throws IOException {
         this.filePath = filePath;
 
@@ -47,7 +51,7 @@ public class Storage {
     /**
      * Loads previously saved tasks.
      *
-     * @return the saved tasks, or an empty list when there is no data file
+     * @return The saved tasks, or an empty list when there is no data file.
      */
     public ArrayList<Task> load() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -59,15 +63,8 @@ public class Storage {
         // Read every line from FILE_PATH.
         // Convert each line back into its corresponding Task object.
         // Add each reconstructed task to tasks.
-        List<String> lines;
-        try {
-            lines = Files.readAllLines(this.filePath);
-        } catch (IOException i) {
-            // explicitly throw IOException,
-            // to make code easier to read,
-            // and edit in the future.
-            throw i;
-        }
+        // This line could throw an IOException if the file could not be read.
+        List<String> lines = Files.readAllLines(this.filePath);
 
         // Add all tasks stored,
         // skip unrecognised lines
@@ -85,7 +82,7 @@ public class Storage {
     /**
      * Saves the supplied tasks, replacing the previous contents of the data file.
      *
-     * @param tasks the current task list
+     * @param tasks The current task list.
      */
     public void save(TaskList tasks) throws IOException {
         // Write lines to FILE_PATH, replacing the previous contents.
@@ -95,8 +92,8 @@ public class Storage {
     /**
      * Reconstructs one task from a line in the data file.
      *
-     * @param line one stored task record
-     * @return the corresponding task
+     * @param line One stored task record.
+     * @return A new task with the same data as recorded.
      */
     private static Task deserialize(String line) throws TaskException {
         final Map<String, String> charToType = Map.of(
