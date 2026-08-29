@@ -75,6 +75,8 @@ public class Duchess {
                     case UNMARK -> this.handleUnmark(command);
                     case TODO, DEADLINE, EVENT -> this.handleAddTask(command);
                     case DELETE -> this.handleDeleteTask(command);
+                    case FIND -> this.handleFind(command);
+                    case FINDEXACT -> this.handleFindExact(command);
                     default -> throw new DuchessException(String.format(
                             "The duchess does not understand what you mean by %s.\n"
                                     + "Please enter valid commands only.",
@@ -142,5 +144,24 @@ public class Duchess {
         return this.tasks.unmarkTaskAt(idx);
     }
 
+    /** Finds tasks whose descriptions contain the keyword supplied after the find command. */
+    private String handleFind(String command) throws TaskException {
+        String keyword = command.substring("find".length()).trim();
+        if (keyword.isEmpty()) {
+            throw TaskException.declareEmptySearchKeyword();
+        }
+
+        return this.tasks.getTasksMatching(keyword.split(" ", -1));
+    }
+
+    private String handleFindExact(String command) throws TaskException {
+        String keyword = command.substring("find".length()).trim();
+        if (keyword.isEmpty()) {
+            throw TaskException.declareEmptySearchKeyword();
+        }
+
+        return this.tasks.getTasksMatching(keyword);
+
+    }
 
 }

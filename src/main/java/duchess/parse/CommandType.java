@@ -1,7 +1,7 @@
 package duchess.parse;
 
 public enum CommandType {
-    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, BYE, UNKNOWN;
+    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, FIND, FINDEXACT, BYE, UNKNOWN;
 
     public static CommandType parse(String input) {
         if (input == null) return UNKNOWN;
@@ -13,6 +13,8 @@ public enum CommandType {
         if (s.startsWith("todo ")) return TODO;
         if (s.startsWith("deadline ")) return DEADLINE;
         if (s.startsWith("event ")) return EVENT;
+        if (s.startsWith("find -e ")) return FINDEXACT;
+        if (s.startsWith("find ")) return FIND;
 
         s = s.trim();
         if (s.equals("list")) return LIST;
@@ -27,7 +29,7 @@ public enum CommandType {
                  TODO, DEADLINE, EVENT -> true;
 
             // not mutators
-            case LIST, UNKNOWN, BYE -> false;
+            case LIST, FIND, FINDEXACT, UNKNOWN, BYE -> false;
         };
     }
 }
