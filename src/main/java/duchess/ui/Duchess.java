@@ -8,13 +8,13 @@ import duchess.tasks.Task;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.lang.StringBuilder;
-import java.util.Scanner;
 
 import duchess.parse.CommandType;
 import duchess.ui.exceptions.DuchessException;
 
+/**
+ * Represents the chatbot.
+ */
 public class Duchess {
     public static void main(String[] args) {
         Duchess duchess;
@@ -26,10 +26,7 @@ public class Duchess {
                     + "It appears she is unwelcome in the premises. :-(");
             return;
         }
-
         duchess.run();
-
-
     }
 
     private static final String banner =
@@ -48,16 +45,23 @@ public class Duchess {
     private final Storage db;
     private final Ui ui;
 
-    Duchess() throws IOException {
-        this("data", "duchess.txt");
-    }
-
+    /**
+     * Creates a new chatbot, with the location
+     * of the storage file.
+     *
+     * @param directory The subdirectory containing the storage file.
+     * @param filepath The remaining address to the storage file.
+     * @throws IOException If the storage file could not be found nor created.
+     */
     Duchess(String directory, String filepath) throws IOException {
         this.db = new Storage(Path.of(directory, filepath));
         this.tasks = new TaskList(db.load());
         this.ui = new Ui(Duchess.name, Duchess.banner, Duchess.separator);
     }
 
+    /**
+     * Runs the duchess chatbot.
+     */
     public void run() {
         this.greet();
 
@@ -111,31 +115,69 @@ public class Duchess {
         this.ui.exit();
     }
 
+    /**
+     * Saves the list of tasks to the storage file.
+     * @throws IOException If unable to save to the file.
+     */
     private void saveState() throws IOException {
         this.db.save(this.tasks);
     }
 
+    /**
+     * Returns a string representing the list of tasks
+     * in user-readable format.
+     */
     private String displayList() {
         return this.tasks.getTasksToPrint();
     }
 
+    /**
+     * Creates a new task from the user command, and
+     * adds it to the list of tasks.
+     *
+     * @param command The user input.
+     * @return A string representing the
+     *          changes to the list of tasks.
+     * @throws TaskException If the task could not be
+     *                          created from the command.
+     */
     private String handleAddTask(String command) throws TaskException {
         Task newTask = TaskFactory.createFromCommand(command);
         return this.tasks.addTask(newTask);
     }
 
+    /**
+     * Deletes a task from the list of tasks.
+     *
+     * @param command The user input.
+     * @return A string representing the result of the deletion.
+     */
     private String handleDeleteTask(String command) {
         String arg = command.substring(7).trim(); // after "delete "
         int idx = Integer.parseInt(arg);
         return this.tasks.deleteTaskFromIndex(idx);
     }
 
+    /**
+     * Marks a task as complete.
+     *
+     * @param command The user input.
+     * @return A string representing
+     *          the task marked as complete.
+     */
     private String handleMark(String command) {
         String arg = command.substring(5).trim(); // after "mark "
         int idx = Integer.parseInt(arg);
         return this.tasks.markTaskAt(idx);
     }
 
+    /**
+     * Marks a task as incomplete.
+     *
+     * @param command The user input.
+     * @return A string representing the task
+     *          marked as incomplete.
+     */
     private String handleUnmark(String command) {
         String arg = command.substring(7).trim(); // after "unmark "
         int idx = Integer.parseInt(arg);
