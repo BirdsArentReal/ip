@@ -22,7 +22,7 @@ public class TaskException extends Exception {
                 type
         ));
     }
-    
+
     /** Creates an exception for a find command without a search keyword. */
     public static TaskException declareEmptySearchKeyword() {
         return new TaskException("Please provide a keyword to find.");

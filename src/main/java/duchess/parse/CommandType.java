@@ -15,21 +15,52 @@ public enum CommandType {
      * @return The CommandType corresponding to the command.
      */
     public static CommandType parse(String input) {
-        if (input == null) return UNKNOWN;
+        if (input == null) {
+            return UNKNOWN;
+        }
 
         String s = input.stripLeading().toLowerCase();
-        if (s.startsWith("mark ")) return MARK;
-        if (s.startsWith("unmark ")) return UNMARK;
-        if (s.startsWith("delete ")) return DELETE;
-        if (s.startsWith("todo ")) return TODO;
-        if (s.startsWith("deadline ")) return DEADLINE;
-        if (s.startsWith("event ")) return EVENT;
-        if (s.startsWith("find -e ")) return FINDEXACT;
-        if (s.startsWith("find ")) return FIND;
+
+
+        // Commands with additional fields
+        if (s.startsWith("mark ")) {
+            return MARK;
+        }
+        if (s.startsWith("unmark ")) {
+            return UNMARK;
+        }
+        if (s.startsWith("delete ")) {
+            return DELETE;
+        }
+        if (s.startsWith("todo ")) {
+            return TODO;
+        }
+        if (s.startsWith("deadline ")) {
+            return DEADLINE;
+        }
+        if (s.startsWith("event ")) {
+            return EVENT;
+        }
+        
+        if (s.startsWith("find -e ")) {
+            return FINDEXACT;
+        }
+        else if (s.startsWith("find ")) {
+            return FIND;
+        }
+
 
         s = s.trim();
-        if (s.equals("list")) return LIST;
-        if (s.equals("bye")) return BYE;
+
+        // Commands without additional fields
+        if (s.equals("list")) {
+            return LIST;
+        }
+        if (s.equals("bye")) {
+            return BYE;
+        }
+
+        // Unrecognized commands.
         return UNKNOWN;
     }
 

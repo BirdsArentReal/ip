@@ -6,7 +6,7 @@ package duchess.tasks;
 public abstract class Task {
 
     private final String description;
-    private boolean done;
+    private boolean isDone;
 
     /**
      * Creates a new task with some description.
@@ -15,21 +15,21 @@ public abstract class Task {
      */
     protected Task(String description) {
         this.description = description;
-        this.done = false;
+        this.isDone = false;
     }
 
     /**
      * Marks this task as complete.
      */
     public void mark() {
-        this.done = true;
+        this.isDone = true;
     }
 
     /**
      * Marks this task as incomplete.
      */
     public void unmark() {
-        this.done = false;
+        this.isDone = false;
     }
 
     /**
@@ -46,7 +46,7 @@ public abstract class Task {
      */
     @Override
     public String toString() {
-        return (done ? "[X] " : "[ ] ") + description;
+        return (isDone ? "[X] " : "[ ] ") + description;
     }
 
     /**
@@ -54,6 +54,6 @@ public abstract class Task {
      * storage format.
      */
     public String getStorageFormat(){
-        return (done ? "1 | " : "0 | ") + description;
+        return (isDone ? "1 | " : "0 | ") + description;
     }
 }
