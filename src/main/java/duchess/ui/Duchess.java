@@ -7,6 +7,7 @@ import duchess.tasks.exceptions.TaskException;
 import duchess.tasks.Task;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.lang.StringBuilder;
 import java.util.Scanner;
@@ -18,7 +19,7 @@ public class Duchess {
     public static void main(String[] args) {
         Duchess duchess;
         try {
-            duchess = new Duchess();
+            duchess = new Duchess("data", "duchess.txt");
         } catch (IOException i) {
             System.out.println("Oh no! The duchess was unable to find, nor create,\n"
                     + "the file /data/duchess.txt\n\n"
@@ -48,7 +49,11 @@ public class Duchess {
     private final Ui ui;
 
     Duchess() throws IOException {
-        this.db = new Storage();
+        this("data", "duchess.txt");
+    }
+
+    Duchess(String directory, String filepath) throws IOException {
+        this.db = new Storage(Path.of(directory, filepath));
         this.tasks = new TaskList(db.load());
         this.ui = new Ui(Duchess.name, Duchess.banner, Duchess.separator);
     }
