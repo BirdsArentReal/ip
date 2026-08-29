@@ -88,6 +88,46 @@ class TaskListTest {
         assertEquals(" 1. [T][ ] read book", taskList.getTasksToPrint());
     }
 
+    @Test
+    void getTasksMatching_keywordMatchesMultipleTasks_returnsNumberedMatches() {
+        TaskList taskList = taskListWith(new ToDo("read book"), new ToDo("return book"),
+                new ToDo("buy groceries"));
+
+        String matches = taskList.getTasksMatching("book");
+
+        assertEquals("Here are the matching tasks in your list:\n"
+                        + " 1. [T][ ] read book\n"
+                        + " 2. [T][ ] return book",
+                matches);
+    }
+
+    @Test
+    void getTasksMatching_differentLetterCase_returnsMatches() {
+        TaskList taskList = taskListWith(new ToDo("read book"));
+
+        assertEquals("Here are the matching tasks in your list:\n 1. [T][ ] read book",
+                taskList.getTasksMatching("BOOK"));
+    }
+
+    @Test
+    void getTasksMatching_noTaskMatches_returnsNoMatchesMessage() {
+        TaskList taskList = taskListWith(new ToDo("read book"));
+
+        assertEquals("There are no matching tasks in your list.", taskList.getTasksMatching("groceries"));
+    }
+
+    @Test
+    void getTasksMatching_multipleKeywords_returnsMatchAllOnly() {
+        TaskList taskList = taskListWith(
+                new ToDo("a b"),
+                new ToDo("b c"),
+                new ToDo("c d"),
+                new ToDo("12")
+        );
+
+        assertEquals("Here are the matching tasks in your list:\n 1. [T][ ] b c", taskList.getTasksMatching("c", "b"));
+    }
+
     private TaskList taskListWith(Task... tasks) {
         return new TaskList(new ArrayList<>(Arrays.asList(tasks)));
     }

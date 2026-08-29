@@ -5,6 +5,7 @@ import duchess.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class TaskList {
     private final ArrayList<Task> tasks;
@@ -68,6 +69,37 @@ public class TaskList {
     public List<String> getStorageFormat() {
         // convert tasks to strings for storage
         return tasks.stream().map(Task::getStorageFormat).toList();
+    }
+
+    /**
+     * Returns a numbered display list of tasks whose descriptions contain the supplied keyword.
+     *
+     * @param keywords the case-insensitive search terms
+     * @return the matching tasks, or a message when no tasks match
+     */
+    public String getTasksMatching(String... keywords) {
+        Stream<Task> matchingTasks = tasks.stream();
+
+        for (String keyword: keywords){
+            System.out.println(keyword);
+            matchingTasks = matchingTasks.filter(task ->
+                    task.containsKeyword(keyword));
+        }
+
+        List<String> results = matchingTasks.map(Task::toString).toList();
+
+        if (results.isEmpty()) {
+            return "There are no matching tasks in your list.";
+        }
+
+        StringBuilder result = new StringBuilder("Here are the matching tasks in your list:\n");
+        for (int i = 0; i < results.size(); i++) {
+            result.append(" ").append(i + 1).append(". ").append(results.get(i));
+            if (i < results.size() - 1) {
+                result.append("\n");
+            }
+        }
+        return result.toString();
     }
 
     public String getTasksToPrint() {

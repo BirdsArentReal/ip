@@ -12,6 +12,11 @@ public class TaskException extends Exception {
         ));
     }
 
+    /** Creates an exception for a find command without a search keyword. */
+    public static TaskException declareEmptySearchKeyword() {
+        return new TaskException("Please provide a keyword to find.");
+    }
+
     public static TaskException declareInvalidCharacters(String cmd, String invalidChars) {
         return new TaskException(String.format(
                 "Your command contains invalid characters! \n"
