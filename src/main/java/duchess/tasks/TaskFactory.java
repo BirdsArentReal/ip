@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
+/**
+ * Handles the creation of tasks.
+ */
 public class TaskFactory {
     private static final char[] INVALID_CHARACTERS = new char[]{'|'};
 
@@ -19,7 +22,9 @@ public class TaskFactory {
 
 
     /**
-     * Create a Tasks.ToDo from a description string.
+     * Create a task with no specific deadline nor date.
+     *
+     * @throws TaskException If the description is empty.
      */
     private static ToDo createToDo(String description) throws TaskException {
         description = description.trim();
@@ -30,9 +35,10 @@ public class TaskFactory {
     }
 
     /**
-     * Create a Tasks.Deadline from a string of the form:
-     *   "<description> /by <byText>"
-     * If "/by" is missing, the whole string is treated as the description.
+     * Create a task with a deadline.
+     *
+     * @throws TaskException If the command contains insufficient information,
+     *                          or invalid date format.
      */
     private static Deadline createDeadline(String rest) throws TaskException {
         if (rest.isEmpty()) {
@@ -59,9 +65,10 @@ public class TaskFactory {
     }
 
     /**
-     * Create a Tasks.Event from a string of the form:
-     *   "<description> /from <fromText> /to <toText>"
-     * /from or /to may be omitted; parsing is tolerant.
+     * Create a task occurring in a specific range of time.
+     *
+     * @throws TaskException If the command contains insufficient information,
+     *                          an invalid date format, or invalid date range.
      */
     private static Event createEvent(String rest) throws TaskException {
         if (rest.isEmpty()) {
@@ -111,9 +118,12 @@ public class TaskFactory {
         return new Event(desc, from, to);
     }
 
-    private static boolean containsInvalidCharacters(String cmd) {
+    /**
+     * Checks if a command contains invalid characters.
+     */
+    private static boolean containsInvalidCharacters(String command) {
         for (char c : TaskFactory.INVALID_CHARACTERS) {
-            if (cmd.indexOf(c) > 0) {
+            if (command.indexOf(c) > 0) {
                 return true;
             }
         }
@@ -121,9 +131,13 @@ public class TaskFactory {
     }
 
     /**
-     * Convenience: create a Tasks.Task from a full command line.
-     * Recognizes leading keywords: "todo ", "deadline ", "event ".
-     * If none match, returns a Tasks.ToDo with the whole command as description.
+     * Creates a task from the user command.
+     *
+     * @throws TaskException If the command is unrecognized, or otherwise
+     *                          contains invalid characters,
+     *                          insufficient information,
+     *                          invalid date format,
+     *                          or invalid date range.
      */
     public static Task createFromCommand(String commandLower) throws TaskException {
         if (TaskFactory.containsInvalidCharacters(commandLower)) {

@@ -1,23 +1,42 @@
 package duchess.tasks.collections;
 
-import duchess.io.Storage;
 import duchess.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Handles the list of tasks and any requests related to them.
+ */
 public class TaskList {
     private final ArrayList<Task> tasks;
 
+    /**
+     * Creates a new TaskList containing the specified tasks.
+     *
+     * @param tasks The list of tasks to be stored in the TaskList.
+     */
     public TaskList(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
 
+    /**
+     * Checks if there are any tasks being stored.
+     *
+     * @return true, if there is at least one task being stored. <br>
+     *          false, otherwise.
+     */
     public boolean isEmpty() {
         return tasks.isEmpty();
     }
 
+    /**
+     * Adds a new task to the list of tasks.
+     *
+     * @param newTask The task to be added.
+     * @return A string representing the changes to the task list.
+     */
     public String addTask(Task newTask) {
         tasks.add(newTask);
 
@@ -31,6 +50,13 @@ public class TaskList {
         );
     }
 
+    /**
+     * Deletes a task from the task list.
+     *
+     * @param idx The index of the task to be deleted.
+     * @return On success, a string representing the new state of the task list. <br>
+     *          On failure, a string representing the failed operation.
+     */
     public String deleteTaskFromIndex(int idx) {
         if (idx < 1 || idx > tasks.size()) {
             return "Invalid task number.";
@@ -46,6 +72,13 @@ public class TaskList {
         );
     }
 
+    /**
+     * Marks a task on the task list as complete.
+     *
+     * @param idx The index of the task to be marked complete.
+     * @return On success, a string representing the changed task. <br>
+     *          On failure, a string representing the failed operation.
+     */
     public String markTaskAt(int idx) {
         if (idx < 1 || idx > tasks.size()) {
             return "Invalid task number.";
@@ -56,6 +89,13 @@ public class TaskList {
         return "Nice! I've marked this task as done:\n  " + t;
     }
 
+    /**
+     * Marks a task on the task list as incomplete.
+     *
+     * @param idx The index of the task to be marked incomplete.
+     * @return On success, a string representing the changed task. <br>
+     *          On failure, a string representing the failed operation.
+     */
     public String unmarkTaskAt(int idx) {
         if (idx < 1 || idx > tasks.size()) {
             return "Invalid task number.";
@@ -66,6 +106,11 @@ public class TaskList {
         return ("OK, I've marked this task as not done yet:\n  " + t);
     }
 
+    /**
+     * Returns a list representing the tasks in storage format.
+     *
+     * @return The list of tasks in storage format.
+     */
     public List<String> getStorageFormat() {
         // convert tasks to strings for storage
         return tasks.stream().map(Task::getStorageFormat).toList();
@@ -102,6 +147,10 @@ public class TaskList {
         return result.toString();
     }
 
+    /**
+     * Returns a list representing the tasks in user-readable format.
+     * @return The list of tasks in user-readable format.
+     */
     public String getTasksToPrint() {
         if (tasks.isEmpty()) {
             return "You have no tasks pending.";
