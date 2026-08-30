@@ -1,6 +1,7 @@
 package duchess.tasks.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,6 +20,17 @@ public class TaskList {
      */
     public TaskList(ArrayList<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    /**
+     * Creates a new TaskList containing  the specified tasks.
+     *
+     * @param tasks The tasks to be stored in the TaskList.
+     */
+    public TaskList(Task... tasks) {
+        this.tasks = new ArrayList<>();
+
+        this.tasks.addAll(Arrays.asList(tasks));
     }
 
     /**
