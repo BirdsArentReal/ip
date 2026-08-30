@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import duchess.tasks.Task;
-import duchess.tasks.ToDo;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
+
+import duchess.tasks.Task;
+import duchess.tasks.ToDo;
 
 /** Tests task-list operations and their user-visible results. */
 class TaskListTest {

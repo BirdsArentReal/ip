@@ -3,10 +3,10 @@ package duchess.tasks;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import org.junit.jupiter.api.Test;
 
 /** Tests the completion-state behaviour shared by all tasks. */
 class TaskTest {
@@ -14,19 +14,19 @@ class TaskTest {
     private static LocalDate dummyDate = LocalDate.parse("1000-12-13", pattern);
 
     @Test
-    public void todoCreation_InitiallyUnmarked() {
+    public void todoCreation_initiallyUnmarked() {
         Task task = new ToDo("test");
         assertTrue(task.toString().startsWith("[T][ ]"));
     }
 
     @Test
-    public void deadlineCreation_InitiallyUnmarked() {
+    public void deadlineCreation_initiallyUnmarked() {
         Deadline task = new Deadline("test", dummyDate);
         assertTrue(task.toString().startsWith("[D][ ]"));
     }
 
     @Test
-    public void eventCreation_InitiallyUnmarked() {
+    public void eventCreation_initiallyUnmarked() {
         Event task = new Event("test", dummyDate, dummyDate);
         assertTrue(task.toString().startsWith("[E][ ]"));
     }

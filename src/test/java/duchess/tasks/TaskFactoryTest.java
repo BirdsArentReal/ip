@@ -3,8 +3,10 @@ package duchess.tasks;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import duchess.tasks.exceptions.TaskException;
 import org.junit.jupiter.api.Test;
+
+import duchess.tasks.exceptions.TaskException;
+
 
 /** Tests command parsing and the persisted representations produced by {@link TaskFactory}. */
 class TaskFactoryTest {

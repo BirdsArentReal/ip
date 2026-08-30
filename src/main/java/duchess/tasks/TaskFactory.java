@@ -1,10 +1,10 @@
 package duchess.tasks;
 
-import duchess.tasks.exceptions.TaskException;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+
+import duchess.tasks.exceptions.TaskException;
 
 /**
  * Handles the creation of tasks.
@@ -86,7 +86,9 @@ public class TaskFactory {
             throw TaskException.declareMissingField("event", "to");
         }
 
-        String desc, fromStr, toStr;
+        String desc;
+        String fromStr;
+        String toStr;
 
         if (toIndex < fromIndex) {
             desc = trimmed.substring(0, toIndex).trim();

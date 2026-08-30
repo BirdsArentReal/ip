@@ -1,10 +1,10 @@
 package duchess.tasks.collections;
 
-import duchess.tasks.Task;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+
+import duchess.tasks.Task;
 
 /**
  * Handles the list of tasks and any requests related to them.
@@ -41,9 +41,9 @@ public class TaskList {
         tasks.add(newTask);
 
         return String.format(
-                "Got it. I've added this task:\n" +
-                        "  %s\n" +
-                        "Now you have %s task%s in the list.",
+                "Got it. I've added this task:\n"
+                        + "  %s\n"
+                        + "Now you have %s task%s in the list.",
                 newTask,
                 tasks.size(),
                 tasks.size() == 1 ? "" : "s"
@@ -125,7 +125,7 @@ public class TaskList {
     public String getTasksMatching(String... keywords) {
         Stream<Task> matchingTasks = tasks.stream();
 
-        for (String keyword: keywords){
+        for (String keyword: keywords) {
             System.out.println(keyword);
             matchingTasks = matchingTasks.filter(task ->
                     task.containsKeyword(keyword));

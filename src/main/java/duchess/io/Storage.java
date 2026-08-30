@@ -1,16 +1,16 @@
 package duchess.io;
 
-import duchess.tasks.TaskFactory;
-import duchess.tasks.collections.TaskList;
-import duchess.tasks.exceptions.TaskException;
-import duchess.tasks.Task;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import duchess.tasks.Task;
+import duchess.tasks.TaskFactory;
+import duchess.tasks.collections.TaskList;
+import duchess.tasks.exceptions.TaskException;
 
 /**
  * Handles loading tasks from and saving tasks to a text file.

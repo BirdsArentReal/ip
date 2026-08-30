@@ -41,11 +41,9 @@ public enum CommandType {
         if (s.startsWith("event ")) {
             return EVENT;
         }
-        
         if (s.startsWith("find -e ")) {
             return FINDEXACT;
-        }
-        else if (s.startsWith("find ")) {
+        } else if (s.startsWith("find ")) {
             return FIND;
         }
 
