@@ -1,34 +1,20 @@
 package duchess.ui;
 
-import duchess.io.Storage;
-import duchess.tasks.TaskFactory;
-import duchess.tasks.collections.TaskList;
-import duchess.tasks.exceptions.TaskException;
-import duchess.tasks.Task;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
+import duchess.io.Storage;
 import duchess.parse.CommandType;
+import duchess.tasks.Task;
+import duchess.tasks.TaskFactory;
+import duchess.tasks.collections.TaskList;
+import duchess.tasks.exceptions.TaskException;
 import duchess.ui.exceptions.DuchessException;
 
 /**
  * Represents the chatbot.
  */
 public class Duchess {
-    public static void main(String[] args) {
-        Duchess duchess;
-        try {
-            duchess = new Duchess("data", "duchess.txt");
-        } catch (IOException i) {
-            System.out.println("Oh no! The duchess was unable to find, nor create,\n"
-                    + "the file /data/duchess.txt\n\n"
-                    + "It appears she is unwelcome in the premises. :-(");
-            return;
-        }
-        duchess.run();
-    }
-
     private static final String banner =
             " ____  _   _  _____    _ ____  ___  ___\n"
             + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
@@ -96,8 +82,8 @@ public class Duchess {
             } catch (DuchessException | TaskException e) {
                 this.ui.say(e.getMessage());
             } catch (NumberFormatException n) {
-                this.ui.say("Error: The command " + command +
-                        " only works with valid integers!");
+                this.ui.say("Error: The command " + command
+                        + " only works with valid integers!");
             } catch (IOException e) {
                 this.ui.say("Oh no! The duchess has caught the goldfish syndrome! \n"
                         + "She is unable to remember your current list. \n"
@@ -205,5 +191,20 @@ public class Duchess {
         return this.tasks.getTasksMatching(keyword);
 
     }
+
+
+    public static void main(String[] args) {
+        Duchess duchess;
+        try {
+            duchess = new Duchess("data", "duchess.txt");
+        } catch (IOException i) {
+            System.out.println("Oh no! The duchess was unable to find, nor create,\n"
+                    + "the file /data/duchess.txt\n\n"
+                    + "It appears she is unwelcome in the premises. :-(");
+            return;
+        }
+        duchess.run();
+    }
+
 
 }
