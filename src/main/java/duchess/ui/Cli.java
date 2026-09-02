@@ -6,7 +6,7 @@ import java.util.Scanner;
  * Listens for commands by the user, and displays
  * strings to the user.
  */
-class Ui {
+class Cli implements IUi {
     private final String displayName;
     private final String banner;
     private final String separator;
@@ -18,7 +18,7 @@ class Ui {
      * @param banner The banner of the chatbot utilising this instance.
      * @param separator The design of the borders of the displayed output.
      */
-    Ui(String name, String banner, String separator) {
+    Cli(String name, String banner, String separator) {
         this.displayName = name;
         this.banner = banner;
         this.separator = separator;

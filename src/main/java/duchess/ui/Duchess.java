@@ -29,7 +29,7 @@ public class Duchess {
 
     private final TaskList tasks;
     private final Storage db;
-    private final Ui ui;
+    private final IUi ui;
 
     /**
      * Creates a new chatbot, with the location
@@ -42,7 +42,8 @@ public class Duchess {
     Duchess(String directory, String filepath) throws IOException {
         this.db = new Storage(Path.of(directory, filepath));
         this.tasks = new TaskList(db.load());
-        this.ui = new Ui(Duchess.name, Duchess.banner, Duchess.separator);
+        this.ui = new Cli(Duchess.name, Duchess.banner, Duchess.separator);
+        // this.ui = new Gui(Duchess.name);
     }
 
     /**
