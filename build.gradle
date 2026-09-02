@@ -59,7 +59,7 @@ test {
 }
 
 application {
-    mainClass = 'duchess.ui.Duchess'
+    mainClass = 'duchess.ui.gui.controller.Launcher'
 }
 
 jar {
