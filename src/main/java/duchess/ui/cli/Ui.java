@@ -1,4 +1,4 @@
-package duchess.ui;
+package duchess.ui.cli;
 
 import java.util.Scanner;
 
@@ -6,7 +6,7 @@ import java.util.Scanner;
  * Listens for commands by the user, and displays
  * strings to the user.
  */
-class Cli implements IUi {
+class Ui {
     private final String displayName;
     private final String banner;
     private final String separator;
@@ -14,11 +14,11 @@ class Cli implements IUi {
 
     /**
      * Creates a new Ui instance.
-     * @param name The name of the chatbot utilising this instance.
-     * @param banner The banner of the chatbot utilising this instance.
+     * @param name The NAME of the chatbot utilising this instance.
+     * @param banner The BANNER of the chatbot utilising this instance.
      * @param separator The design of the borders of the displayed output.
      */
-    Cli(String name, String banner, String separator) {
+    Ui(String name, String banner, String separator) {
         this.displayName = name;
         this.banner = banner;
         this.separator = separator;
