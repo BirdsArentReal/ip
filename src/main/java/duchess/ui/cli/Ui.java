@@ -1,4 +1,4 @@
-package duchess.ui;
+package duchess.ui.cli;
 
 import java.util.Scanner;
 
@@ -14,8 +14,8 @@ class Ui {
 
     /**
      * Creates a new Ui instance.
-     * @param name The name of the chatbot utilising this instance.
-     * @param banner The banner of the chatbot utilising this instance.
+     * @param name The NAME of the chatbot utilising this instance.
+     * @param banner The BANNER of the chatbot utilising this instance.
      * @param separator The design of the borders of the displayed output.
      */
     Ui(String name, String banner, String separator) {

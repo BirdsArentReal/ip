@@ -15,21 +15,10 @@ import duchess.ui.exceptions.DuchessException;
  * Represents the chatbot.
  */
 public class Duchess {
-    private static final String banner =
-            " ____  _   _  _____    _ ____  ___  ___\n"
-            + "|  _ \\| | | |/ __/ |  | | ___|/   \\/   \\\n"
-            + "| | | | | | | |  | |__| | |__|  | |  | |\n"
-            + "| | | | | | | |  |  __  |  __|\\  \\/\\  \\/\n"
-            + "| |_| | \\_/ | |__| |  | | |__ /\\  \\/\\  \\\n"
-            + "|____/ \\___/ \\___\\_|  |_|____|\\___/\\___/\n";
-    private static final String name = "Duchess";
-
-    // 40 underscores
-    private static final String separator = "*________________________________________*";
+    public static final String NAME = "Duchess";
 
     private final TaskList tasks;
     private final Storage db;
-    private final Ui ui;
 
     /**
      * Creates a new chatbot, with the location
@@ -39,68 +28,59 @@ public class Duchess {
      * @param filepath The remaining address to the storage file.
      * @throws IOException If the storage file could not be found nor created.
      */
-    Duchess(String directory, String filepath) throws IOException {
+    public Duchess(String directory, String filepath) throws IOException {
         this.db = new Storage(Path.of(directory, filepath));
         this.tasks = new TaskList(db.load());
-        this.ui = new Ui(Duchess.name, Duchess.banner, Duchess.separator);
+    }
+
+    /**
+     * Returns the exit message for duchess.
+     * For UI to compare the response strings to, to know
+     * when to close the application.
+     */
+    public static String getExitMessage() {
+        return "Bye! See you again! :^D";
     }
 
     /**
      * Runs the duchess chatbot.
      */
-    public void run() {
-        this.greet();
-
-        while (true) {
-            String command = this.ui.listen();
-            CommandType type = CommandType.parse(command);
-            if (type == CommandType.BYE) {
-                break;
-            }
-
-            try {
-                String response = switch (type) {
-                    case LIST -> this.displayList();
-                    case MARK -> this.handleMark(command);
-                    case UNMARK -> this.handleUnmark(command);
-                    case TODO, DEADLINE, EVENT -> this.handleAddTask(command);
-                    case DELETE -> this.handleDeleteTask(command);
-                    case FIND -> this.handleFind(command);
-                    case FINDEXACT -> this.handleFindExact(command);
-                    default -> throw new DuchessException(String.format(
-                            "The duchess does not understand what you mean by %s.\n"
-                                    + "Please enter valid commands only.",
-                            command));
-                };
-
-                this.ui.say(response);
-
-                if (CommandType.isMutator(type)) {
-                    this.saveState();
-                }
-
-            } catch (DuchessException | TaskException e) {
-                this.ui.say(e.getMessage());
-            } catch (NumberFormatException n) {
-                this.ui.say("Error: The command " + command
-                        + " only works with valid integers!");
-            } catch (IOException e) {
-                this.ui.say("Oh no! The duchess has caught the goldfish syndrome! \n"
-                        + "She is unable to remember your current list. \n"
-                        + "Please check out /data/duchess.txt as soon as possible!"
-                );
-            }
+    public String respondTo(String userInput) {
+        CommandType type = CommandType.parse(userInput);
+        if (type == CommandType.BYE) {
+            return Duchess.getExitMessage();
         }
 
-        this.exit();
-    }
+        try {
+            String response = switch (type) {
+                case LIST -> this.displayList();
+                case MARK -> this.handleMark(userInput);
+                case UNMARK -> this.handleUnmark(userInput);
+                case TODO, DEADLINE, EVENT -> this.handleAddTask(userInput);
+                case DELETE -> this.handleDeleteTask(userInput);
+                case FIND -> this.handleFind(userInput);
+                case FINDEXACT -> this.handleFindExact(userInput);
+                default -> throw new DuchessException(String.format(
+                        "The duchess does not understand what you mean by %s.\n"
+                                + "Please enter valid commands only.",
+                        userInput));
+            };
 
-    private void greet() {
-        this.ui.greet();
-    }
+            if (CommandType.isMutator(type)) {
+                this.saveState();
+            }
+            return response;
 
-    private void exit() {
-        this.ui.exit();
+        } catch (DuchessException | TaskException e) {
+            return e.getMessage();
+        } catch (NumberFormatException n) {
+            return "Error: The command " + userInput
+                    + " only works with valid integers!";
+        } catch (IOException e) {
+            return "Oh no! The duchess has caught the goldfish syndrome! \n"
+                    + "She is unable to remember your current list. \n"
+                    + "Please check out /data/duchess.txt as soon as possible!";
+        }
     }
 
     /**
@@ -191,20 +171,4 @@ public class Duchess {
         return this.tasks.getTasksMatching(keyword);
 
     }
-
-
-    public static void main(String[] args) {
-        Duchess duchess;
-        try {
-            duchess = new Duchess("data", "duchess.txt");
-        } catch (IOException i) {
-            System.out.println("Oh no! The duchess was unable to find, nor create,\n"
-                    + "the file /data/duchess.txt\n\n"
-                    + "It appears she is unwelcome in the premises. :-(");
-            return;
-        }
-        duchess.run();
-    }
-
-
 }
