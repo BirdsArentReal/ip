@@ -152,7 +152,11 @@ public class Duchess {
         return this.tasks.unmarkTaskAt(idx);
     }
 
-    /** Finds tasks whose descriptions contain the keyword supplied after the find command. */
+    /**
+     * Finds tasks whose descriptions contain the keyword supplied after the find command.
+     * Text separated by spaces are treated as different keywords, and the result
+     * only contains tasks whose description match all keywords.
+     */
     private String handleFind(String command) throws TaskException {
         String keyword = command.substring("find".length()).trim();
         if (keyword.isEmpty()) {
@@ -162,8 +166,14 @@ public class Duchess {
         return this.tasks.getTasksMatching(keyword.split(" ", -1));
     }
 
+    /**
+     * Finds tasks whose descriptions contain the keyword supplied after the find command.
+     * The entire string after the -e flag is treated as one keyword, and
+     * the entire keywords must be contained in the task description as
+     * one continuous string, for the task to be displayed.
+     */
     private String handleFindExact(String command) throws TaskException {
-        String keyword = command.substring("find".length()).trim();
+        String keyword = command.substring("find -e".length()).trim();
         if (keyword.isEmpty()) {
             throw TaskException.declareEmptySearchKeyword();
         }

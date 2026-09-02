@@ -36,12 +36,20 @@ public class MainWindow extends AnchorPane {
         this.scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
+    /**
+     * Sets the bot to the instance specified.
+     * Additionally, greets the user, once the
+     * bot is successfully set.
+     */
     public void setBot(Duchess d) {
         this.duchess = d;
         this.greet();
     }
 
-    public void greet() {
+    /**
+     * Greets the user when the application is opened.
+     */
+    private void greet() {
         DialogBox greeting = DialogBox.getDuchessDialogBox(
                 "Hello! I am " + Duchess.NAME + ". \n"
                         + "What can I do for you?"
