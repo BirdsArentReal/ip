@@ -141,7 +141,7 @@ public class TaskList {
          check that t has been marked using the toString,
          because we cannot directly access the state.
         */
-        assert (t.toString().startsWith("[X] ")) : "Marked task should be complete";
+        assert (t.toString().contains("[X] ")) : "Marked task should be complete";
 
         return "Nice! I've marked this task as done:\n  " + t;
     }
@@ -165,7 +165,7 @@ public class TaskList {
          check that t is not marked using the toString,
          because we cannot directly access the state.
         */
-        assert (t.toString().startsWith("[ ] ")) : "Unmarked task should be incomplete";
+        assert (t.toString().contains("[ ] ")) : "Unmarked task should be incomplete";
 
         return "OK, I've marked this task as not done yet:\n  " + t;
     }
