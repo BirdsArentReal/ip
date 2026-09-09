@@ -2,6 +2,7 @@ package duchess.ui;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import duchess.io.Storage;
 import duchess.parse.CommandType;
@@ -29,8 +30,14 @@ public class Duchess {
      * @throws IOException If the storage file could not be found nor created.
      */
     public Duchess(String directory, String filepath) throws IOException {
+        assert (directory != null) : "Storage directory must not be null";
+        assert (filepath != null) : "Storage file path must not be null";
+
         this.db = new Storage(Path.of(directory, filepath));
-        this.tasks = new TaskList(db.load());
+
+        ArrayList<Task> tasksList = this.db.load();
+        assert (tasksList != null) : "Storage must return an array list, even if empty";
+        this.tasks = new TaskList(tasksList);
     }
 
     /**
@@ -46,6 +53,9 @@ public class Duchess {
      * Runs the duchess chatbot.
      */
     public String respondTo(String userInput) {
+        assert (userInput != null) : "Should not ask duchess to respond to null strings";
+        userInput = userInput.trim().toLowerCase();
+
         CommandType type = CommandType.parse(userInput);
         if (type == CommandType.BYE) {
             return Duchess.getExitMessage();

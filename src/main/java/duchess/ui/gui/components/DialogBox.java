@@ -1,6 +1,7 @@
 package duchess.ui.gui.components;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,16 +27,27 @@ public class DialogBox extends HBox {
     @FXML
     private ImageView profilePictureDisplay;
 
-    private DialogBox(String text, Image picture) {
+    private DialogBox(String text, Image picture) throws IllegalStateException {
+        assert (text != null) : "Dialog text must not be null";
+        assert (picture != null) : "Dialog image must not be null";
+
+        URL fxmlResource = DialogBox.class.getResource("/view/DialogBox.fxml");
+        assert (fxmlResource != null) : "DialogBox.fxml must be present in /resources/view/";
+
+        FXMLLoader fxmlLoader = new FXMLLoader(fxmlResource);
+        fxmlLoader.setController(this);
+        fxmlLoader.setRoot(this);
+
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(DialogBox.class
-                    .getResource("/view/DialogBox.fxml"));
-            fxmlLoader.setController(this);
-            fxmlLoader.setRoot(this);
             fxmlLoader.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Dialog box could not be loaded", e);
         }
+
+        assert (this.textDisplay != null)
+                : "textDisplay must be injected from DialogBox.fxml";
+        assert (this.profilePictureDisplay != null)
+                : "profilePictureDisplay must be injected from DialogBox.fxml";
 
         this.textDisplay.setText(text);
         this.profilePictureDisplay.setImage(picture);

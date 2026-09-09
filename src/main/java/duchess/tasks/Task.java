@@ -14,6 +14,8 @@ public abstract class Task {
      * @param description The description of the task.
      */
     protected Task(String description) {
+        assert (description != null) : "Task description must not be null";
+
         this.description = description;
         this.isDone = false;
     }
@@ -37,6 +39,7 @@ public abstract class Task {
      * ignoring letter case.
      */
     public boolean containsKeyword(String keyword) {
+        assert (keyword != null) : "Search keyword should not be null";
         return description.toLowerCase().contains(keyword.toLowerCase());
     }
 
