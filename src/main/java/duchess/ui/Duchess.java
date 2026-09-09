@@ -69,7 +69,7 @@ public class Duchess {
                 case TODO, DEADLINE, EVENT -> this.handleAddTask(userInput);
                 case DELETE -> this.handleDeleteTask(userInput);
                 case FIND -> this.handleFind(userInput);
-                case FINDEXACT -> this.handleFindExact(userInput);
+                case FIND_EXACT -> this.handleFindExact(userInput);
                 default -> throw new DuchessException(String.format(
                         "The duchess does not understand what you mean by %s.\n"
                                 + "Please enter valid commands only.",

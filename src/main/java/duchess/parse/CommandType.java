@@ -1,60 +1,57 @@
 package duchess.parse;
 
 /**
- * Defines the commands that the Duchess is able to understand. <br>
- * Additionally, parses the input string to determine which command is being called.
+ * Defines the commands that the Duchess is able to understand.
+ * <p> Additionally, parses the input string to determine which command is being called.
+ *
  */
 public enum CommandType {
-    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, FIND, FINDEXACT, BYE, UNKNOWN;
+    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, FIND, FIND_EXACT, BYE, UNKNOWN;
 
     /**
-     * Parses the input string to determine which command is being called. <br>
-     * Returns UNKNOWN if the command is not one of the predefined types.
+     * Parses the input string to determine which command is being called.
+     * <p> Returns {@code UNKNOWN} if the command is not one of the predefined types.
      *
      * @param input The command entered by the user.
      * @return The CommandType corresponding to the command.
      */
     public static CommandType parse(String input) {
+        input = input.stripLeading().toLowerCase();
         if (input == null) {
             return UNKNOWN;
         }
 
-        String s = input.stripLeading().toLowerCase();
-
-
         // Commands with additional fields
-        if (s.startsWith("mark ")) {
+        if (input.startsWith("mark ")) {
             return MARK;
         }
-        if (s.startsWith("unmark ")) {
+        if (input.startsWith("unmark ")) {
             return UNMARK;
         }
-        if (s.startsWith("delete ")) {
+        if (input.startsWith("delete ")) {
             return DELETE;
         }
-        if (s.startsWith("todo ")) {
+        if (input.startsWith("todo ")) {
             return TODO;
         }
-        if (s.startsWith("deadline ")) {
+        if (input.startsWith("deadline ")) {
             return DEADLINE;
         }
-        if (s.startsWith("event ")) {
+        if (input.startsWith("event ")) {
             return EVENT;
         }
-        if (s.startsWith("find -e ")) {
-            return FINDEXACT;
-        } else if (s.startsWith("find ")) {
+        if (input.startsWith("find -e ")) {
+            return FIND_EXACT;
+        }
+        if (input.startsWith("find ")) {
             return FIND;
         }
 
-
-        s = s.trim();
-
         // Commands without additional fields
-        if (s.equals("list")) {
+        if (input.equals("list")) {
             return LIST;
         }
-        if (s.equals("bye")) {
+        if (input.equals("bye")) {
             return BYE;
         }
 
@@ -66,18 +63,18 @@ public enum CommandType {
      * Checks whether the command is one of those which will change
      * the tasks being stored.
      *
-     * @param type The type of command.
-     * @return true, if the command will make changes to the tasks. <br>
-     *          false, otherwise.
+     * @param commandType The type of command.
+     * @return {@code true}, if the command will make changes to the tasks.
+     *          <p> {@code false}, otherwise.
      */
-    public static boolean isMutator(CommandType type) {
-        return switch (type) {
-            // mutators
+    public static boolean isMutator(CommandType commandType) {
+        assert (commandType != null) : "Command type cannot be null";
+
+        return switch (commandType) {
             case MARK, UNMARK, DELETE,
                  TODO, DEADLINE, EVENT -> true;
 
-            // not mutators
-            case LIST, FIND, FINDEXACT, UNKNOWN, BYE -> false;
+            case LIST, FIND, FIND_EXACT, UNKNOWN, BYE -> false;
         };
     }
 }
