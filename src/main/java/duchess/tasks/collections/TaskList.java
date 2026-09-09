@@ -89,12 +89,6 @@ public class TaskList {
             return "An indistinguishable task already exists!";
         }
 
-        if (this.tasks.stream()
-                .map(Task::toString)
-                .anyMatch(str -> str.equals(newTask.toString()))) {
-            return "An indistinguishable task already exists!";
-        }
-
         this.tasks.add(newTask);
 
         return String.format(
