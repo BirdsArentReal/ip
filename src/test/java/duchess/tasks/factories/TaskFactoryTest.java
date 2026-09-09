@@ -1,10 +1,11 @@
-package duchess.tasks;
+package duchess.tasks.factories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import duchess.tasks.Task;
 import duchess.tasks.exceptions.TaskException;
 
 

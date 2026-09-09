@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import duchess.io.Storage;
 import duchess.parse.CommandType;
 import duchess.tasks.Task;
-import duchess.tasks.TaskFactory;
 import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.factories.TaskFactory;
 import duchess.ui.exceptions.DuchessException;
 
 /**
@@ -82,7 +82,7 @@ public class Duchess {
                 default -> throw new DuchessException(String.format(
                         "The duchess does not understand what you mean by %s.\n"
                                 + "Please enter valid commands only.",
-                        userInput));    
+                        userInput));
             };
         } catch (DuchessException | TaskException e) {
             return e.getMessage();

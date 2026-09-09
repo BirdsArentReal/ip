@@ -9,9 +9,9 @@ import java.util.Map;
 
 import duchess.io.exceptions.StorageException;
 import duchess.tasks.Task;
-import duchess.tasks.TaskFactory;
 import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.factories.TaskFactory;
 
 /**
  * Handles loading tasks from and saving tasks to a text file.

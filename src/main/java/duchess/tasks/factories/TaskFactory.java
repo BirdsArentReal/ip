@@ -1,10 +1,14 @@
-package duchess.tasks;
+package duchess.tasks.factories;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
-import duchess.parse.CommandType;
+import duchess.tasks.DateFormat;
+import duchess.tasks.Deadline;
+import duchess.tasks.Event;
+import duchess.tasks.Task;
+import duchess.tasks.ToDo;
 import duchess.tasks.exceptions.TaskException;
 
 /**
