@@ -112,7 +112,14 @@ public class Storage {
         }
 
         // Use the first part to restore whether it is marked done.
-        boolean isDone = items[0].trim().equals("1");
+        boolean isDone;
+        if (items[0].trim().equals("0")) {
+            isDone = false;
+        } else if (items[0].trim().equals("1")) {
+            isDone = true;
+        } else {
+            throw TaskException.declareUnrecognisedCommand(line);
+        }
 
         // Use the third part to determine whether this is a
         // ToDo, Deadline, or Event.
