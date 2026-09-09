@@ -37,7 +37,7 @@ public class Duchess {
 
         ArrayList<Task> tasksList = this.db.load();
         assert (tasksList != null) : "Storage must return an array list, even if empty";
-        this.tasks = new TaskList(db.load());
+        this.tasks = new TaskList(tasksList);
     }
 
     /**
@@ -53,7 +53,9 @@ public class Duchess {
      * Runs the duchess chatbot.
      */
     public String respondTo(String userInput) {
-        userInput = userInput.trim();
+        assert (userInput != null) : "Should not ask duchess to respond to null strings";
+        userInput = userInput.trim().toLowerCase();
+        
         CommandType type = CommandType.parse(userInput);
         if (type == CommandType.BYE) {
             return Duchess.getExitMessage();
