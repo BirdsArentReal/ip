@@ -5,6 +5,10 @@ package duchess.io.exceptions;
  * when loading or saving tasks.
  */
 public class StorageException extends Exception {
+
+    /**
+     * Creates a {@code StorageException} with the desired message.
+     */
     public StorageException(String message) {
         super(message);
     }
