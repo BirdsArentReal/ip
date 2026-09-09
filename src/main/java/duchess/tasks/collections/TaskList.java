@@ -85,6 +85,12 @@ public class TaskList {
         assert (!this.tasks.contains(newTask))
                 : "Should not be able to add the same task multiple times";
 
+        if (this.tasks.stream()
+                .map(Task::toString)
+                .anyMatch(str -> str.equals(newTask.toString()))) {
+            return "An indistinguishable task already exists!";
+        }
+
         this.tasks.add(newTask);
 
         return String.format(
