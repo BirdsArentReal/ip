@@ -3,9 +3,11 @@ package duchess.tasks.collections;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import duchess.tasks.Task;
+import duchess.util.Pair;
 
 /**
  * Handles the list of tasks and any requests related to them.
@@ -135,28 +137,15 @@ public class TaskList {
      * @return the matching tasks, or a message when no tasks match
      */
     public String getTasksMatching(String... keywords) {
-        Stream<Task> matchingTasks = tasks.stream();
-
-        for (String keyword: keywords) {
-            System.out.println(keyword);
-            matchingTasks = matchingTasks.filter(task ->
-                    task.containsKeyword(keyword));
-        }
-
-        List<String> results = matchingTasks.map(Task::toString).toList();
-
-        if (results.isEmpty()) {
-            return "There are no matching tasks in your list.";
-        }
-
-        StringBuilder result = new StringBuilder("Here are the matching tasks in your list:\n");
-        for (int i = 0; i < results.size(); i++) {
-            result.append(" ").append(i + 1).append(". ").append(results.get(i));
-            if (i < results.size() - 1) {
-                result.append("\n");
-            }
-        }
-        return result.toString();
+        return IntStream.range(0, this.tasks.size())
+                .mapToObj(index -> new Pair<>(index + 1, this.tasks.get(index)))
+                .filter(pair -> Arrays.stream(keywords)
+                        .allMatch(keyword -> pair.getSecond().containsKeyword(keyword)))
+                .map(pair ->
+                        String.format(" %d. %s",
+                                pair.getFirst(),
+                                pair.getSecond()))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
@@ -168,15 +157,12 @@ public class TaskList {
             return "You have no tasks pending.";
         }
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tasks.size(); i++) {
-            sb.append(" ").append(i + 1).append(". ").append(tasks.get(i));
-            if (i < tasks.size() - 1) {
-                sb.append("\n");
-            }
-        }
-
-        return sb.toString();
+        return IntStream.range(0, this.tasks.size())
+                .<String>mapToObj(index ->
+                        String.format(" %d. %s",
+                                index + 1,
+                                this.tasks.get(index)))
+                .collect(Collectors.joining("\n"));
     }
 
 }
