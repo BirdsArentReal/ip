@@ -134,7 +134,7 @@ public class TaskList {
          check that t is not marked using the toString,
          because we cannot directly access the state.
         */
-        assert (t.toString().startsWith("[X] ")) : "Unmarked task should be incomplete";
+        assert (t.toString().startsWith("[ ] ")) : "Unmarked task should be incomplete";
 
         return "OK, I've marked this task as not done yet:\n  " + t;
     }
@@ -166,7 +166,6 @@ public class TaskList {
         Stream<Task> matchingTasks = tasks.stream();
 
         for (String keyword: keywords) {
-            System.out.println(keyword);
             matchingTasks = matchingTasks.filter(task ->
                     task.containsKeyword(keyword));
         }
