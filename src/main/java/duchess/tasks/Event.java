@@ -20,7 +20,7 @@ public class Event extends Task {
         super(description);
 
         assert (startDate != null) : "An event must have a start date";
-        assert (endDate != null) : "An event must have a end date";
+        assert (endDate != null) : "An event must have an end date";
         assert (startDate.isBefore(endDate)) : "An event must start before it ends";
 
         this.startDate = startDate;

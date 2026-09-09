@@ -55,7 +55,7 @@ public class Duchess {
     public String respondTo(String userInput) {
         assert (userInput != null) : "Should not ask duchess to respond to null strings";
         userInput = userInput.trim().toLowerCase();
-        
+
         CommandType type = CommandType.parse(userInput);
         if (type == CommandType.BYE) {
             return Duchess.getExitMessage();
