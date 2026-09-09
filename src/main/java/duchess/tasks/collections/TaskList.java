@@ -52,6 +52,10 @@ public class TaskList {
      * @return A string representing the changes to the task list.
      */
     public String addTask(Task newTask) {
+        assert (newTask != null) : "A task added to tasklist cannot be null.";
+        assert (!this.tasks.contains(newTask))
+                : "Should not be able to add the same task multiple times";
+
         tasks.add(newTask);
 
         return String.format(
@@ -76,6 +80,9 @@ public class TaskList {
             return "Invalid task number.";
         }
         Task t = tasks.remove(idx - 1);
+
+        assert (!this.tasks.contains(t)) : "Task not removed from tasklist";
+
         return String.format(
                 "Noted. I've removed this task:\n"
                         + "%s\n"
@@ -100,6 +107,13 @@ public class TaskList {
 
         Task t = tasks.get(idx - 1);
         t.mark();
+
+        /*
+         check that t has been marked using the toString,
+         because we cannot directly access the state.
+        */
+        assert (t.toString().startsWith("[X] ")) : "Marked task should be complete";
+
         return "Nice! I've marked this task as done:\n  " + t;
     }
 
@@ -117,7 +131,14 @@ public class TaskList {
 
         Task t = tasks.get(idx - 1);
         t.unmark();
-        return ("OK, I've marked this task as not done yet:\n  " + t);
+
+        /*
+         check that t is not marked using the toString,
+         because we cannot directly access the state.
+        */
+        assert (t.toString().startsWith("[ ] ")) : "Unmarked task should be incomplete";
+
+        return "OK, I've marked this task as not done yet:\n  " + t;
     }
 
     /**
@@ -127,7 +148,14 @@ public class TaskList {
      */
     public List<String> getStorageFormat() {
         // convert tasks to strings for storage
-        return tasks.stream().map(Task::getStorageFormat).toList();
+        List<String> storageFormat = this.tasks.stream()
+                .map(Task::getStorageFormat)
+                .toList();
+
+        assert (storageFormat.size() == this.tasks.size())
+                : "Each task should produce exactly one storage record";
+
+        return storageFormat;
     }
 
     /**
@@ -137,7 +165,7 @@ public class TaskList {
      * @return the matching tasks, or a message when no tasks match
      */
     public String getTasksMatching(String... keywords) {
-        return IntStream.range(0, this.tasks.size())
+        String results = IntStream.range(0, this.tasks.size())
                 .mapToObj(index -> new Pair<>(index + 1, this.tasks.get(index)))
                 .filter(pair -> Arrays.stream(keywords)
                         .allMatch(keyword -> pair.getSecond().containsKeyword(keyword)))
@@ -146,6 +174,12 @@ public class TaskList {
                                 pair.getFirst(),
                                 pair.getSecond()))
                 .collect(Collectors.joining("\n"));
+
+        if (results.isEmpty()) {
+            return "There are no matching tasks in your list.";
+        }
+
+        return results;
     }
 
     /**

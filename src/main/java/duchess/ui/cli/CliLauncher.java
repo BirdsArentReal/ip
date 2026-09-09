@@ -5,7 +5,7 @@ import java.io.IOException;
 import duchess.ui.Duchess;
 
 /**
- * [Deprecated] Retains the CLI interface for Duchess.
+ * [Legacy] Retains the CLI interface for Duchess.
  */
 public class CliLauncher {
     public static final String BANNER =
