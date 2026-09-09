@@ -64,7 +64,7 @@ public class MainWindow extends AnchorPane {
     }
 
     @FXML
-    private void handleUserInput() {
+    private void handleUserInput() throws IllegalStateException {
         assert (this.duchess != null) : "Must set bot before handling user input";
 
         String input = this.userInput.getText();
