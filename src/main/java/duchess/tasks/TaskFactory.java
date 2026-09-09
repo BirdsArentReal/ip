@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
+import duchess.parse.CommandType;
 import duchess.tasks.exceptions.TaskException;
 
 /**
@@ -11,6 +12,11 @@ import duchess.tasks.exceptions.TaskException;
  */
 public class TaskFactory {
     private static final char[] INVALID_CHARACTERS = new char[]{'|'};
+
+    private static final String DEADLINE_BY_MARKER = "/by";
+
+    private static final String EVENT_FROM_MARKER = "/from";
+    private static final String EVENT_TO_MARKER = "/to";
 
     private static LocalDate parseDate(String dateStr) throws TaskException {
         try {
@@ -20,17 +26,107 @@ public class TaskFactory {
         }
     }
 
+    private static String getCommandName(String command) {
+        return command.split(" ")[0];
+    }
+
+    private static int findMarker(String command, String marker) throws TaskException {
+        int location = command.indexOf(marker);
+        if (location == -1) {
+            // not in command
+            throw TaskException.declareMissingField(getCommandName(command), marker);
+        }
+
+        return location;
+    }
+
+    /**
+     * Checks if a command contains invalid characters.
+     */
+    private static boolean containsInvalidCharacters(String command) {
+        for (char c : TaskFactory.INVALID_CHARACTERS) {
+            if (command.indexOf(c) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String[] parseTodoCommand(String command)
+            throws TaskException {
+        String description = command.substring("todo".length()).trim();
+        if (description.isEmpty()) {
+            throw TaskException.declareEmptyDescription("todo");
+        }
+        return new String[]{description};
+    }
+
+    private static String[] parseDeadlineCommand(String command, int byIndex)
+            throws TaskException {
+        String description = command.substring("deadline".length(), byIndex).trim();
+        String byString = command
+                .substring(byIndex + DEADLINE_BY_MARKER.length())
+                .trim();
+
+        if (description.isEmpty()) {
+            throw TaskException.declareEmptyDescription("deadline");
+        } else if (byString.isEmpty()) {
+            throw TaskException.declareMissingField("deadline", DEADLINE_BY_MARKER);
+        }
+
+        return new String[]{description, byString};
+    }
+
+    private static String[] parseEventCommand(String command, int fromIndex, int toIndex)
+            throws TaskException {
+        String desc;
+        String fromStr;
+        String toStr;
+
+        if (toIndex < fromIndex) {
+            desc = command.substring("event".length(), toIndex).trim();
+            fromStr = command.substring(fromIndex + EVENT_FROM_MARKER.length()).trim();
+            toStr = command.substring(toIndex + EVENT_TO_MARKER.length(), fromIndex).trim();
+        } else {
+            desc = command.substring("event".length(), fromIndex).trim();
+            fromStr = command.substring(fromIndex + EVENT_FROM_MARKER.length(), toIndex).trim();
+            toStr = command.substring(toIndex + EVENT_TO_MARKER.length()).trim();
+        }
+
+        if (desc.isEmpty()) {
+            throw TaskException.declareEmptyDescription("event");
+        }
+        if (fromStr.isEmpty()) {
+            throw TaskException.declareMissingField("event", EVENT_FROM_MARKER);
+        }
+        if (toStr.isEmpty()) {
+            throw TaskException.declareMissingField("event", EVENT_TO_MARKER);
+        }
+
+        return new String[]{desc, fromStr, toStr};
+    }
+
+    private static LocalDate[] parseEventDates(String fromDate, String toDate)
+            throws TaskException {
+
+        LocalDate from = TaskFactory.parseDate(fromDate);
+        LocalDate to = TaskFactory.parseDate(toDate);
+
+        if (from.isAfter(to)) {
+            throw TaskException.declareInvalidDateRange(fromDate, toDate);
+        }
+
+        return new LocalDate[]{from, to};
+    }
+
 
     /**
      * Create a task with no specific deadline nor date.
      *
      * @throws TaskException If the description is empty.
      */
-    private static ToDo createToDo(String description) throws TaskException {
-        description = description.trim();
-        if (description.isEmpty()) {
-            throw TaskException.declareEmptyDescription("todo");
-        }
+    private static ToDo createToDo(String command) throws TaskException {
+        String description = parseTodoCommand(command)[0];
         return new ToDo(description);
     }
 
@@ -40,28 +136,15 @@ public class TaskFactory {
      * @throws TaskException If the command contains insufficient information,
      *                          or invalid date format.
      */
-    private static Deadline createDeadline(String rest) throws TaskException {
-        if (rest.isEmpty()) {
-            throw TaskException.declareEmptyDescription("deadline");
-        }
+    private static Deadline createDeadline(String command) throws TaskException {
+        int byIndex = TaskFactory.findMarker(command, DEADLINE_BY_MARKER);
 
-        int byIndex = rest.trim().indexOf("/by");
+        String[] deadlineComponents = TaskFactory.parseDeadlineCommand(command, byIndex);
+        String desc = deadlineComponents[0];
 
-        if (byIndex < 0) {
-            throw TaskException.declareMissingField("deadline", "by");
-        }
+        LocalDate byDate = TaskFactory.parseDate(deadlineComponents[1]);
 
-        String desc = rest.substring(0, byIndex).trim();
-        String byString = rest.substring(byIndex + 3).trim();
-
-        if (desc.isEmpty()) {
-            throw TaskException.declareEmptyDescription("deadline");
-        } else if (byString.isEmpty()) {
-            throw TaskException.declareMissingField("deadline", "by");
-        }
-
-        // this might throw TaskException.declareInvalidDateFormat()
-        return new Deadline(desc, TaskFactory.parseDate(byString));
+        return new Deadline(desc, byDate);
     }
 
     /**
@@ -70,71 +153,26 @@ public class TaskFactory {
      * @throws TaskException If the command contains insufficient information,
      *                          an invalid date format, or invalid date range.
      */
-    private static Event createEvent(String rest) throws TaskException {
-        if (rest.isEmpty()) {
-            // empty description
-            throw TaskException.declareEmptyDescription("event");
-        }
+    private static Event createEvent(String command) throws TaskException {
+        int fromIndex = TaskFactory.findMarker(command, EVENT_FROM_MARKER);
+        int toIndex = TaskFactory.findMarker(command, EVENT_TO_MARKER);
 
-        String trimmed = rest.trim();
-        int fromIndex = trimmed.indexOf("/from");
-        int toIndex = trimmed.indexOf("/to");
+        String[] eventComponents = TaskFactory.parseEventCommand(command, fromIndex, toIndex);
+        String description = eventComponents[0];
+        String fromString = eventComponents[1];
+        String toString = eventComponents[2];
 
-        if (fromIndex < 0) {
-            throw TaskException.declareMissingField("event", "from");
-        } else if (toIndex < 0) {
-            throw TaskException.declareMissingField("event", "to");
-        }
+        LocalDate[] dateRange = TaskFactory.parseEventDates(fromString, toString);
+        LocalDate fromDate = dateRange[0];
+        LocalDate toDate = dateRange[1];
 
-        String desc;
-        String fromStr;
-        String toStr;
-
-        if (toIndex < fromIndex) {
-            desc = trimmed.substring(0, toIndex).trim();
-            fromStr = trimmed.substring(fromIndex + 5).trim();
-            toStr = trimmed.substring(toIndex + 3, fromIndex).trim();
-        } else {
-            desc = trimmed.substring(0, fromIndex).trim();
-            fromStr = trimmed.substring(fromIndex + 5, toIndex).trim();
-            toStr = trimmed.substring(toIndex + 3).trim();
-        }
-
-        if (desc.isEmpty()) {
-            throw TaskException.declareEmptyDescription("event");
-        } else if (fromStr.isEmpty()) {
-            throw TaskException.declareMissingField("event", "from");
-        } else if (toStr.isEmpty()) {
-            throw TaskException.declareMissingField("event", "to");
-        }
-
-        // these are separated from return because they might
-        // throw TaskException.declareInvalidDateFormat
-        LocalDate from = TaskFactory.parseDate(fromStr);
-        LocalDate to = TaskFactory.parseDate(toStr);
-
-        if (from.isAfter(to)) {
-            throw TaskException.declareInvalidDateRange(fromStr, toStr);
-        }
-
-        return new Event(desc, from, to);
-    }
-
-    /**
-     * Checks if a command contains invalid characters.
-     */
-    private static boolean containsInvalidCharacters(String command) {
-        for (char c : TaskFactory.INVALID_CHARACTERS) {
-            if (command.indexOf(c) > 0) {
-                return true;
-            }
-        }
-        return false;
+        return new Event(description, fromDate, toDate);
     }
 
     /**
      * Creates a task from the user command.
      *
+     * @param commandLower The command to create a task, in lower case.
      * @throws TaskException If the command is unrecognized, or otherwise
      *                          contains invalid characters,
      *                          insufficient information,
@@ -142,18 +180,23 @@ public class TaskFactory {
      *                          or invalid date range.
      */
     public static Task createFromCommand(String commandLower) throws TaskException {
+        assert (commandLower != null) : "Command to create Task cannot be null!";
+        assert (commandLower.equals(commandLower.toLowerCase()))
+                : "commandLower must be in lower case!";
+
         if (TaskFactory.containsInvalidCharacters(commandLower)) {
             throw TaskException.declareInvalidCharacters(
                     commandLower,
                     Arrays.toString(TaskFactory.INVALID_CHARACTERS));
         }
 
+        commandLower = commandLower.stripLeading();
         if (commandLower.startsWith("todo ")) {
-            return createToDo(commandLower.substring(5));
+            return createToDo(commandLower);
         } else if (commandLower.startsWith("deadline ")) {
-            return createDeadline(commandLower.substring(9));
+            return createDeadline(commandLower);
         } else if (commandLower.startsWith("event ")) {
-            return createEvent(commandLower.substring(6));
+            return createEvent(commandLower);
         } else {
             // Unrecognised command type
             throw TaskException.declareUnrecognisedCommand(commandLower);

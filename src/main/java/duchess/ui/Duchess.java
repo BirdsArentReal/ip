@@ -50,46 +50,45 @@ public class Duchess {
     }
 
     /**
-     * Runs the duchess chatbot.
+     * Runs the duchess chatbot to respond to user input.
      */
     public String respondTo(String userInput) {
         assert (userInput != null) : "Should not ask duchess to respond to null strings";
-        userInput = userInput.trim().toLowerCase();
 
-        CommandType type = CommandType.parse(userInput);
-        if (type == CommandType.BYE) {
-            return Duchess.getExitMessage();
+        userInput = userInput.trim().toLowerCase();
+        CommandType commandType = CommandType.parse(userInput);
+
+        String response = this.handleCommand(userInput, commandType);
+        try {
+            this.saveStateIfMutated(commandType);
+        } catch (IOException e) {
+            return e.getMessage();
         }
 
+        return response;
+    }
+
+    private String handleCommand(String userInput, CommandType commandType) {
         try {
-            String response = switch (type) {
+            return switch (commandType) {
+                case BYE -> Duchess.getExitMessage();
                 case LIST -> this.displayList();
                 case MARK -> this.handleMark(userInput);
                 case UNMARK -> this.handleUnmark(userInput);
                 case TODO, DEADLINE, EVENT -> this.handleAddTask(userInput);
                 case DELETE -> this.handleDeleteTask(userInput);
                 case FIND -> this.handleFind(userInput);
-                case FINDEXACT -> this.handleFindExact(userInput);
+                case FIND_EXACT -> this.handleFindExact(userInput);
                 default -> throw new DuchessException(String.format(
                         "The duchess does not understand what you mean by %s.\n"
                                 + "Please enter valid commands only.",
-                        userInput));
+                        userInput));    
             };
-
-            if (CommandType.isMutator(type)) {
-                this.saveState();
-            }
-            return response;
-
         } catch (DuchessException | TaskException e) {
             return e.getMessage();
         } catch (NumberFormatException n) {
             return "Error: The command " + userInput
                     + " only works with valid integers!";
-        } catch (IOException e) {
-            return "Oh no! The duchess has caught the goldfish syndrome! \n"
-                    + "She is unable to remember your current list. \n"
-                    + "Please check out /data/duchess.txt as soon as possible!";
         }
     }
 
@@ -97,8 +96,17 @@ public class Duchess {
      * Saves the list of tasks to the storage file.
      * @throws IOException If unable to save to the file.
      */
-    private void saveState() throws IOException {
-        this.db.save(this.tasks);
+    private void saveStateIfMutated(CommandType commandType) throws IOException {
+        if (CommandType.isMutator(commandType)) {
+            try {
+                this.db.save(this.tasks);
+            } catch (IOException e) {
+                throw new IOException(
+                        "Oh no! The duchess has caught the goldfish syndrome! \n"
+                        + "She is unable to remember your current list. \n"
+                        + "Please check out the storage path as soon as possible!");
+            }
+        }
     }
 
     /**

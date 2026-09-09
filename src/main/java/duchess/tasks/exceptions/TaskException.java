@@ -59,7 +59,7 @@ public class TaskException extends Exception {
     public static TaskException declareMissingField(String command, String fieldName) {
         return new TaskException(String.format(
                 "The %s command requires a %s field.\n"
-                + "Please re-enter your command with /%s [date].",
+                + "Please re-enter your command with %s [date].",
                 command,
                 fieldName,
                 fieldName
