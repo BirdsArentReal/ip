@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import duchess.io.exceptions.StorageException;
 import duchess.tasks.Task;
 import duchess.tasks.TaskFactory;
 import duchess.tasks.collections.TaskList;
@@ -25,6 +26,27 @@ import duchess.tasks.exceptions.TaskException;
  * <p>{@code isDone} is {@code 0} for an incomplete task and {@code 1} for a completed task.</p>
  */
 public class Storage {
+    /* Class-level constants */
+    private static final Map<String, String> STORED_CHAR_TO_TYPE = Map.of(
+            "T", "todo",
+            "D", "deadline",
+            "E", "event"
+    );
+
+    /** Uses "\\|" to represent "|", as this string is for regex */
+    private static final String SPLIT_CHARACTER = "\\|";
+
+    private static final String COMPLETED_STATUS = "1";
+    private static final String INCOMPLETE_STATUS = "0";
+
+    private static final int EXPECTED_STORE_FORMAT_LENGTH = 4;
+
+    private static final int TASK_STATUS_INDEX = 0;
+    private static final int TASK_DESCRIPTION_INDEX = 1;
+    private static final int TASK_TYPE_INDEX = 2;
+    private static final int TASK_ADDITIONAL_INFORMATION_INDEX = 3;
+
+    /* Instance-level variables */
     private final Path filePath;
 
     /**
@@ -36,6 +58,7 @@ public class Storage {
      *                      be created.
      */
     public Storage(Path filePath) throws IOException {
+        assert (filePath != null) : "Cannot create storage without a file";
         this.filePath = filePath;
 
         Path parentDirectory = filePath.getParent();
@@ -49,44 +72,86 @@ public class Storage {
     }
 
     /**
+     * Returns the stored task as individual components.
+     * @param line The line representing a stored task.
+     * @return An array representing the individual components
+     * @throws StorageException If the line cannot be interpreted
+     *                          as a task.
+     */
+    private static String[] splitStored(String line) throws StorageException {
+        assert (line != null) : "Stored task should not be null";
+
+        // Set limit to -1 so that all instances of "|" are split.
+        String[] items = line.split(SPLIT_CHARACTER, -1);
+        for (int i = 0; i < items.length; i++) {
+            assert (items[i] != null) : "Component of a task cannot be null";
+            items[i] = items[i].trim();
+        }
+
+        if (!isValidSplit(items)) {
+            throw new StorageException("Split failed. \n" + line);
+        }
+
+        return items;
+    }
+
+    private static boolean isValidSplit(String[] components) {
+        assert (components != null) : "Components of a task cannot be null";
+
+        if (components.length != EXPECTED_STORE_FORMAT_LENGTH) {
+            return false;
+        }
+
+        return STORED_CHAR_TO_TYPE.containsKey(components[TASK_TYPE_INDEX]);
+    }
+
+    private static Task makeTask(String[] components) throws TaskException {
+        String type = STORED_CHAR_TO_TYPE.get(components[TASK_TYPE_INDEX]);
+        String desc = components[TASK_DESCRIPTION_INDEX];
+        String additional = components[TASK_ADDITIONAL_INFORMATION_INDEX];
+        Task task = TaskFactory.createFromCommand(String.format(
+                "%s %s %s",
+                type,
+                desc,
+                additional
+        ));
+        return task;
+    }
+
+    private static void markIfComplete(Task task, String taskStatus) throws StorageException {
+        if (isTaskComplete(taskStatus)) {
+            task.mark();
+        }
+    }
+
+    private static boolean isTaskComplete(String taskStatus) throws StorageException {
+        return switch (taskStatus) {
+            case INCOMPLETE_STATUS -> false;
+            case COMPLETED_STATUS -> true;
+            default -> throw new StorageException("IsDone has incorrect format.");
+        };
+    }
+
+    /**
      * Loads previously saved tasks.
      *
      * @return The saved tasks, or an empty list when there is no data file.
      */
     public ArrayList<Task> load() throws IOException {
-        ArrayList<Task> tasks = new ArrayList<>();
-
-        if (Files.notExists(this.filePath)) {
-            return tasks;
-        }
-
-        // Read every line from FILE_PATH.
-        // Convert each line back into its corresponding Task object.
-        // Add each reconstructed task to tasks.
-        // This line could throw an IOException if the file could not be read.
         List<String> lines = Files.readAllLines(this.filePath);
 
-        // Add all tasks stored,
-        // skip unrecognised lines
-        for (String line: lines) {
+        // Add all tasks in storage to an arraylist.
+        ArrayList<Task> tasks = new ArrayList<>();
+        for (String line : lines) {
             try {
                 tasks.add(Storage.deserialize(line));
             } catch (TaskException t) {
-                // do nothing
+                // do nothing, since we are expected to
+                // skip unrecognised lines.
             }
         }
 
         return tasks;
-    }
-
-    /**
-     * Saves the supplied tasks, replacing the previous contents of the data file.
-     *
-     * @param tasks The current task list.
-     */
-    public void save(TaskList tasks) throws IOException {
-        // Write lines to FILE_PATH, replacing the previous contents.
-        Files.write(this.filePath, tasks.getStorageFormat());
     }
 
     /**
@@ -96,56 +161,22 @@ public class Storage {
      * @return A new task with the same data as recorded.
      */
     private static Task deserialize(String line) throws TaskException {
-        final Map<String, String> charToType = Map.of(
-                "T", "todo",
-                "D", "deadline",
-                "E", "event"
-        );
-
-        // Split the line using " | ".
-        // Set limit to -1 so that task splits properly.
-        String[] items = line.split("\\|", -1);
-
-        // Throws error immediately if fewer items than expected
-        if (items.length < 4) {
+        try {
+            String[] components = Storage.splitStored(line);
+            Task task = makeTask(components);
+            markIfComplete(task, components[TASK_STATUS_INDEX]);
+            return task;
+        } catch (StorageException e) {
             throw TaskException.declareUnrecognisedCommand(line);
         }
+    }
 
-        // Use the first part to restore whether it is marked done.
-        boolean isDone;
-        if (items[0].trim().equals("0")) {
-            isDone = false;
-        } else if (items[0].trim().equals("1")) {
-            isDone = true;
-        } else {
-            throw TaskException.declareUnrecognisedCommand(line);
-        }
-
-        // Use the third part to determine whether this is a
-        // ToDo, Deadline, or Event.
-        String type = charToType.getOrDefault(items[2].trim(), null);
-
-        // Get the description and any additional information
-        // of the stored line.
-        String desc = items[1].trim();
-        String additional = items[3].trim();
-
-
-        if (type == null) {
-            throw TaskException.declareUnrecognisedCommand(line);
-        }
-
-        Task task = TaskFactory.createFromCommand(String.format(
-                "%s %s %s",
-                type,
-                desc,
-                additional
-        ));
-
-        if (isDone) {
-            task.mark();
-        }
-
-        return task;
+    /**
+     * Saves the supplied tasks, replacing the previous contents of the data file.
+     *
+     * @param tasks The current task list.
+     */
+    public void save(TaskList tasks) throws IOException {
+        Files.write(this.filePath, tasks.getStorageFormat());
     }
 }
