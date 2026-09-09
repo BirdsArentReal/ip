@@ -50,7 +50,7 @@ public class Storage {
     private final Path filePath;
 
     /**
-     * Creates a storage handler that saves data in filePath.
+     * Creates a storage handler that saves data in {@code filePath}.
      * If the file or directory doesn't exist, create it.
      *
      * @param filePath The location of the file to save to.
@@ -72,7 +72,7 @@ public class Storage {
     }
 
     /**
-     * Returns the stored task as individual components.
+     * Splits the stored task into individual components.
      * @param line The line representing a stored task.
      * @return An array representing the individual components
      * @throws StorageException If the line cannot be interpreted
@@ -95,6 +95,13 @@ public class Storage {
         return items;
     }
 
+    /**
+     * Conducts a preliminary check for whether the string array can
+     * describe a {@code Task}.
+     * @param components The components of the storage line after the split.
+     * @return {@code true}, if the array is of correct length, and the task type is valid.
+     *          <p> {@code false}, otherwise.
+     */
     private static boolean isValidSplit(String[] components) {
         assert (components != null) : "Components of a task cannot be null";
 
@@ -105,6 +112,13 @@ public class Storage {
         return STORED_CHAR_TO_TYPE.containsKey(components[TASK_TYPE_INDEX]);
     }
 
+    /**
+     * Creates a task from its components.
+     * @param components The string array representing the split
+     *                   components of the storage line.
+     * @return A {@code Task}, as described by the components.
+     * @throws TaskException If the components cannot be recognized as a {@code Task}.
+     */
     private static Task makeTask(String[] components) throws TaskException {
         String type = STORED_CHAR_TO_TYPE.get(components[TASK_TYPE_INDEX]);
         String desc = components[TASK_DESCRIPTION_INDEX];
@@ -118,12 +132,19 @@ public class Storage {
         return task;
     }
 
+    /**
+     * Marks the {@code task} as complete if the {@code taskStatus} says so.
+     */
     private static void markIfComplete(Task task, String taskStatus) throws StorageException {
         if (isTaskComplete(taskStatus)) {
             task.mark();
         }
     }
 
+    /**
+     * Determines if the {@code taskStatus} describes a completed task.
+     * @throws StorageException If the {@code taskStatus} could not be recognized.
+     */
     private static boolean isTaskComplete(String taskStatus) throws StorageException {
         return switch (taskStatus) {
             case INCOMPLETE_STATUS -> false;
