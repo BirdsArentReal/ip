@@ -3,8 +3,8 @@ package duchess.tasks;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Stores the DateTimeFormatter used for parsing the displaying
- * dates.
+ * Standardizes the date formats for display
+ * and parsing.
  */
 public final class DateFormat {
 
