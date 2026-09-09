@@ -82,8 +82,18 @@ public class TaskList {
      */
     public String addTask(Task newTask) {
         assert (newTask != null) : "A task added to tasklist cannot be null.";
-        assert (!this.tasks.contains(newTask))
-                : "Should not be able to add the same task multiple times";
+
+        if (this.tasks.stream()
+                .map(Task::toString)
+                .anyMatch(str -> str.equals(newTask.toString()))) {
+            return "An indistinguishable task already exists!";
+        }
+
+        if (this.tasks.stream()
+                .map(Task::toString)
+                .anyMatch(str -> str.equals(newTask.toString()))) {
+            return "An indistinguishable task already exists!";
+        }
 
         this.tasks.add(newTask);
 
