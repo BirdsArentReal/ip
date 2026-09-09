@@ -15,7 +15,6 @@ import javafx.util.Duration;
  * Displays the main window the user views and interacts with.
  */
 public class MainWindow extends AnchorPane {
-
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -30,9 +29,14 @@ public class MainWindow extends AnchorPane {
 
     private Duchess duchess;
 
-
     @FXML
-    public void initialize() {
+    private void initialize() {
+        assert (scrollPane != null) : "scrollPane must be injected from MainWindow.fxml";
+        assert (dialogContainer != null) : "dialogContainer must be injected from MainWindow.fxml";
+        assert (inputContainer != null) : "inputContainer must be injected from MainWindow.fxml";
+        assert (userInput != null) : "userInput must be injected from MainWindow.fxml";
+        assert (sendButton != null) : "sendButton must be injected from MainWindow.fxml";
+
         this.scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
@@ -42,6 +46,8 @@ public class MainWindow extends AnchorPane {
      * bot is successfully set.
      */
     public void setBot(Duchess d) {
+        assert (d != null) : "The application requires the bot to be set";
+
         this.duchess = d;
         this.greet();
     }
@@ -59,6 +65,8 @@ public class MainWindow extends AnchorPane {
 
     @FXML
     private void handleUserInput() {
+        assert (this.duchess != null) : "Must set bot before handling user input";
+
         String input = this.userInput.getText();
         String response = this.duchess.respondTo(input);
 
