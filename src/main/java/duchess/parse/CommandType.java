@@ -6,7 +6,8 @@ package duchess.parse;
  *
  */
 public enum CommandType {
-    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, FIND, FIND_EXACT, BYE, UNKNOWN;
+    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, RECURRING,
+            FIND, FIND_EXACT, BYE, UNKNOWN;
 
     /**
      * Parses the input string to determine which command is being called.
@@ -16,10 +17,10 @@ public enum CommandType {
      * @return The CommandType corresponding to the command.
      */
     public static CommandType parse(String input) {
-        input = input.stripLeading().toLowerCase();
         if (input == null) {
             return UNKNOWN;
         }
+        input = input.stripLeading().toLowerCase();
 
         // Commands with additional fields
         if (input.startsWith("mark ")) {
@@ -39,6 +40,9 @@ public enum CommandType {
         }
         if (input.startsWith("event ")) {
             return EVENT;
+        }
+        if (input.startsWith("recurring ")) {
+            return RECURRING;
         }
         if (input.startsWith("find -e ")) {
             return FIND_EXACT;
@@ -72,7 +76,7 @@ public enum CommandType {
 
         return switch (commandType) {
             case MARK, UNMARK, DELETE,
-                 TODO, DEADLINE, EVENT -> true;
+                 TODO, DEADLINE, EVENT, RECURRING -> true;
 
             case LIST, FIND, FIND_EXACT, UNKNOWN, BYE -> false;
         };
