@@ -129,7 +129,7 @@ public class Duchess {
      */
     private String handleAddTask(String command) throws TaskException {
         Task newTask = TaskFactory.createFromCommand(command);
-        return this.tasks.addTask(newTask);
+        return this.tasks.addTaskIfNotExist(newTask);
     }
 
     /**
