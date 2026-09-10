@@ -20,42 +20,42 @@ public enum CommandType {
         if (input == null) {
             return UNKNOWN;
         }
-        input = input.stripLeading().toLowerCase();
+        String commandLower = input.stripLeading().toLowerCase();
 
         // Commands with additional fields
-        if (input.startsWith("mark ")) {
+        if (commandLower.startsWith("mark ")) {
             return MARK;
         }
-        if (input.startsWith("unmark ")) {
+        if (commandLower.startsWith("unmark ")) {
             return UNMARK;
         }
-        if (input.startsWith("delete ")) {
+        if (commandLower.startsWith("delete ")) {
             return DELETE;
         }
-        if (input.startsWith("todo ")) {
+        if (commandLower.startsWith("todo ")) {
             return TODO;
         }
-        if (input.startsWith("deadline ")) {
+        if (commandLower.startsWith("deadline ")) {
             return DEADLINE;
         }
-        if (input.startsWith("event ")) {
+        if (commandLower.startsWith("event ")) {
             return EVENT;
         }
-        if (input.startsWith("recurring ")) {
+        if (commandLower.startsWith("recurring ")) {
             return RECURRING;
         }
-        if (input.startsWith("find -e ")) {
+        if (commandLower.startsWith("find -e ")) {
             return FIND_EXACT;
         }
-        if (input.startsWith("find ")) {
+        if (commandLower.startsWith("find ")) {
             return FIND;
         }
 
         // Commands without additional fields
-        if (input.equals("list")) {
+        if (commandLower.equals("list")) {
             return LIST;
         }
-        if (input.equals("bye")) {
+        if (commandLower.equals("bye")) {
             return BYE;
         }
 
