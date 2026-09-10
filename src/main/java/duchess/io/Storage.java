@@ -21,6 +21,7 @@ import duchess.tasks.factories.TaskFactory;
  * &lt;isDone&gt; | &lt;description&gt; | T |
  * &lt;isDone&gt; | &lt;description&gt; | D | /by &lt;by&gt;
  * &lt;isDone&gt; | &lt;description&gt; | E | /from &lt;from&gt; /to &lt;to&gt;
+ * &lt;isDone&gt; | &lt;description&gt; | R | /by &lt;by&gt; /repeat &lt;days&gt;
  * </pre>
  *
  * <p>{@code isDone} is {@code 0} for an incomplete task and {@code 1} for a completed task.</p>
@@ -30,7 +31,8 @@ public class Storage {
     private static final Map<String, String> STORED_CHAR_TO_TYPE = Map.of(
             "T", "todo",
             "D", "deadline",
-            "E", "event"
+            "E", "event",
+            "R", "recurring"
     );
 
     /** Uses "\\|" to represent "|", as this string is for regex */
