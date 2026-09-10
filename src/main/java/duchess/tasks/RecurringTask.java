@@ -55,8 +55,9 @@ public class RecurringTask extends Task {
      */
     @Override
     public String getStorageFormat() {
-        return String.format("%s | R | /repeat %s",
+        return String.format("%s | R | /by %s /repeat %s",
                 super.getStorageFormat(),
+                this.date.format(DateFormat.PARSE_FORMAT),
                 this.getRecurrenceText());
     }
 
