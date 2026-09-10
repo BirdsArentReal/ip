@@ -35,6 +35,35 @@ class TaskFactoryTest {
     }
 
     @Test
+    void createFromCommand_recurringCommand_returnsExpectedStorageFormat()
+            throws TaskException {
+        Task task = TaskFactory.createFromCommand(
+                "recurring take medication /by 2024-10-15 /repeat 2 days");
+
+        assertEquals("0 | take medication | R | /by 2024-10-15 /repeat 2 days",
+                task.getStorageFormat());
+    }
+
+    @Test
+    void createFromCommand_recurringMarkersReversed_returnsExpectedStorageFormat()
+            throws TaskException {
+        Task task = TaskFactory.createFromCommand(
+                "recurring take medication /repeat 2 days /by 2024-10-15");
+
+        assertEquals("0 | take medication | R | /by 2024-10-15 /repeat 2 days",
+                task.getStorageFormat());
+    }
+
+    @Test
+    void createFromCommand_recurringUnsupportedUnit_throwsTaskException() {
+        String recurringCreator =
+                "recurring take medication /by 2024-10-15 /repeat 2 weeks";
+
+        assertThrows(TaskException.class, () ->
+                TaskFactory.createFromCommand(recurringCreator));
+    }
+
+    @Test
     void createFromCommand_eventFromDateAfterToDate_throwsTaskException() {
         String eventCreator = "event test /from 2027-12-12 /to 2020-12-12";
         assertThrows(TaskException.class, () -> TaskFactory.createFromCommand(eventCreator));
