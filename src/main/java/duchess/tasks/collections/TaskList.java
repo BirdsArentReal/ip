@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import duchess.tasks.RecurringTask;
 import duchess.tasks.Task;
 import duchess.util.Pair;
 
@@ -80,7 +81,7 @@ public class TaskList {
      * @param newTask The task to be added.
      * @return A string representing the changes to the task list.
      */
-    public String addTask(Task newTask) {
+    public String addTaskIfNotExist(Task newTask) {
         assert (newTask != null) : "A task added to tasklist cannot be null.";
 
         if (this.tasks.stream()
@@ -140,6 +141,10 @@ public class TaskList {
 
         Task t = this.tasks.get(idx - 1);
         t.mark();
+
+        if (t instanceof RecurringTask recurringTask) {
+            this.addTaskIfNotExist(recurringTask.createNextOccurrence());
+        }
 
         /*
          check that t has been marked using the toString,

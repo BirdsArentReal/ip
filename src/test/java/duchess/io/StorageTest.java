@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import duchess.tasks.Task;
-import duchess.tasks.TaskFactory;
 import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.factories.TaskFactory;
 
 /** Tests that storage preserves a task list when it is saved and loaded again. */
 class StorageTest {

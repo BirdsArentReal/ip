@@ -1,10 +1,16 @@
-package duchess.tasks;
+package duchess.tasks.factories;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 
-import duchess.parse.CommandType;
+import duchess.tasks.DateFormat;
+import duchess.tasks.Deadline;
+import duchess.tasks.Event;
+import duchess.tasks.RecurringTask;
+import duchess.tasks.Task;
+import duchess.tasks.ToDo;
 import duchess.tasks.exceptions.TaskException;
 
 /**
@@ -14,6 +20,9 @@ public class TaskFactory {
     private static final char[] INVALID_CHARACTERS = new char[]{'|'};
 
     private static final String DEADLINE_BY_MARKER = "/by";
+
+    private static final String RECURRING_BY_MARKER = "/by";
+    private static final String RECURRING_REPEAT_MARKER = "/repeat";
 
     private static final String EVENT_FROM_MARKER = "/from";
     private static final String EVENT_TO_MARKER = "/to";
@@ -119,6 +128,74 @@ public class TaskFactory {
         return new LocalDate[]{from, to};
     }
 
+    private static String[] parseRecurringCommand(String command, int byIndex,
+            int repeatIndex) throws TaskException {
+        String description;
+        String byString;
+        String repeatString;
+
+        if (byIndex < repeatIndex) {
+            description = command.substring("recurring".length(), byIndex).trim();
+            byString = command.substring(
+                    byIndex + RECURRING_BY_MARKER.length(), repeatIndex).trim();
+            repeatString = command.substring(
+                    repeatIndex + RECURRING_REPEAT_MARKER.length()).trim();
+        } else {
+            description = command.substring("recurring".length(), repeatIndex).trim();
+            repeatString = command.substring(
+                    repeatIndex + RECURRING_REPEAT_MARKER.length(), byIndex).trim();
+            byString = command.substring(
+                    byIndex + RECURRING_BY_MARKER.length()).trim();
+        }
+
+        if (description.isEmpty()) {
+            throw TaskException.declareEmptyDescription("recurring");
+        }
+        if (byString.isEmpty()) {
+            throw TaskException.declareMissingField("recurring", RECURRING_BY_MARKER);
+        }
+        if (repeatString.isEmpty()) {
+            throw TaskException.declareMissingField("recurring", RECURRING_REPEAT_MARKER);
+        }
+
+        return new String[]{description, byString, repeatString};
+    }
+
+    private static Period parseRecurrence(String recurrence) throws TaskException {
+        String[] components = recurrence.trim().split("\\s+");
+        boolean isDayUnit = components.length == 2
+                && (components[1].equals("day") || components[1].equals("days"));
+        if (!isDayUnit) {
+            throw TaskException.declareInvalidDateFormat(recurrence);
+        }
+
+        int days;
+        try {
+            days = Integer.parseInt(components[0]);
+        } catch (NumberFormatException e) {
+            throw TaskException.declareInvalidDateFormat(recurrence);
+        }
+
+        if (days <= 0) {
+            throw TaskException.declareInvalidDateFormat(recurrence);
+        }
+        return Period.ofDays(days);
+    }
+
+    private static RecurringTask createRecurring(String command)
+            throws TaskException {
+        int byIndex = TaskFactory.findMarker(command, RECURRING_BY_MARKER);
+        int repeatIndex = TaskFactory.findMarker(command, RECURRING_REPEAT_MARKER);
+
+        String[] components = TaskFactory
+                .parseRecurringCommand(command, byIndex, repeatIndex);
+        String description = components[0];
+        LocalDate byDate = TaskFactory.parseDate(components[1]);
+        Period recurrence = TaskFactory.parseRecurrence(components[2]);
+
+        return new RecurringTask(description, byDate, recurrence);
+    }
+
 
     /**
      * Create a task with no specific deadline nor date.
@@ -197,6 +274,8 @@ public class TaskFactory {
             return createDeadline(commandLower);
         } else if (commandLower.startsWith("event ")) {
             return createEvent(commandLower);
+        } else if (commandLower.startsWith("recurring ")) {
+            return createRecurring(commandLower);
         } else {
             // Unrecognised command type
             throw TaskException.declareUnrecognisedCommand(commandLower);

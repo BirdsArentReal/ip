@@ -23,7 +23,7 @@ class TaskListTest {
     void addTask_validTask_addsTaskAndReturnsConfirmation() {
         TaskList taskList = new TaskList();
 
-        String response = taskList.addTask(new ToDo("read book"));
+        String response = taskList.addTaskIfNotExist(new ToDo("read book"));
 
         assertFalse(taskList.isEmpty());
         assertEquals("Got it. I've added this task:\n"

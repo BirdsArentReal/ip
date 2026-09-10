@@ -6,7 +6,8 @@ package duchess.parse;
  *
  */
 public enum CommandType {
-    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, FIND, FIND_EXACT, BYE, UNKNOWN;
+    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, RECURRING,
+            FIND, FIND_EXACT, BYE, UNKNOWN;
 
     /**
      * Parses the input string to determine which command is being called.
@@ -16,42 +17,45 @@ public enum CommandType {
      * @return The CommandType corresponding to the command.
      */
     public static CommandType parse(String input) {
-        input = input.stripLeading().toLowerCase();
         if (input == null) {
             return UNKNOWN;
         }
+        String commandLower = input.stripLeading().toLowerCase();
 
         // Commands with additional fields
-        if (input.startsWith("mark ")) {
+        if (commandLower.startsWith("mark ")) {
             return MARK;
         }
-        if (input.startsWith("unmark ")) {
+        if (commandLower.startsWith("unmark ")) {
             return UNMARK;
         }
-        if (input.startsWith("delete ")) {
+        if (commandLower.startsWith("delete ")) {
             return DELETE;
         }
-        if (input.startsWith("todo ")) {
+        if (commandLower.startsWith("todo ")) {
             return TODO;
         }
-        if (input.startsWith("deadline ")) {
+        if (commandLower.startsWith("deadline ")) {
             return DEADLINE;
         }
-        if (input.startsWith("event ")) {
+        if (commandLower.startsWith("event ")) {
             return EVENT;
         }
-        if (input.startsWith("find -e ")) {
+        if (commandLower.startsWith("recurring ")) {
+            return RECURRING;
+        }
+        if (commandLower.startsWith("find -e ")) {
             return FIND_EXACT;
         }
-        if (input.startsWith("find ")) {
+        if (commandLower.startsWith("find ")) {
             return FIND;
         }
 
         // Commands without additional fields
-        if (input.equals("list")) {
+        if (commandLower.equals("list")) {
             return LIST;
         }
-        if (input.equals("bye")) {
+        if (commandLower.equals("bye")) {
             return BYE;
         }
 
@@ -72,7 +76,7 @@ public enum CommandType {
 
         return switch (commandType) {
             case MARK, UNMARK, DELETE,
-                 TODO, DEADLINE, EVENT -> true;
+                 TODO, DEADLINE, EVENT, RECURRING -> true;
 
             case LIST, FIND, FIND_EXACT, UNKNOWN, BYE -> false;
         };

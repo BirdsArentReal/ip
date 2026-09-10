@@ -1,10 +1,11 @@
-package duchess.tasks;
+package duchess.tasks.factories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import duchess.tasks.Task;
 import duchess.tasks.exceptions.TaskException;
 
 
@@ -31,6 +32,35 @@ class TaskFactoryTest {
 
         assertEquals("0 | team meeting | E | /from 2024-10-15 /to 2024-10-16",
                 task.getStorageFormat());
+    }
+
+    @Test
+    void createFromCommand_recurringCommand_returnsExpectedStorageFormat()
+            throws TaskException {
+        Task task = TaskFactory.createFromCommand(
+                "recurring take medication /by 2024-10-15 /repeat 2 days");
+
+        assertEquals("0 | take medication | R | /by 2024-10-15 /repeat 2 days",
+                task.getStorageFormat());
+    }
+
+    @Test
+    void createFromCommand_recurringMarkersReversed_returnsExpectedStorageFormat()
+            throws TaskException {
+        Task task = TaskFactory.createFromCommand(
+                "recurring take medication /repeat 2 days /by 2024-10-15");
+
+        assertEquals("0 | take medication | R | /by 2024-10-15 /repeat 2 days",
+                task.getStorageFormat());
+    }
+
+    @Test
+    void createFromCommand_recurringUnsupportedUnit_throwsTaskException() {
+        String recurringCreator =
+                "recurring take medication /by 2024-10-15 /repeat 2 weeks";
+
+        assertThrows(TaskException.class, () ->
+                TaskFactory.createFromCommand(recurringCreator));
     }
 
     @Test

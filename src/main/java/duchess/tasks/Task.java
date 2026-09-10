@@ -35,6 +35,15 @@ public abstract class Task {
     }
 
     /**
+     * Returns the description of this task for use by specialised task types.
+     *
+     * @return the task description
+     */
+    protected String getDescription() {
+        return this.description;
+    }
+
+    /**
      * Returns whether this task description contains the supplied keyword,
      * ignoring letter case.
      */
