@@ -75,7 +75,7 @@ public class Duchess {
                 case LIST -> this.displayList();
                 case MARK -> this.handleMark(userInput);
                 case UNMARK -> this.handleUnmark(userInput);
-                case TODO, DEADLINE, EVENT -> this.handleAddTask(userInput);
+                case TODO, DEADLINE, EVENT, RECURRING -> this.handleAddTask(userInput);
                 case DELETE -> this.handleDeleteTask(userInput);
                 case FIND -> this.handleFind(userInput);
                 case FIND_EXACT -> this.handleFindExact(userInput);
