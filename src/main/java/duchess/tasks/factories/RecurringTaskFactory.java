@@ -37,15 +37,6 @@ class RecurringTaskFactory {
         return new RecurringTask(details.getDescription(), byDate, recurrence);
     }
 
-    private static LocalDate parseDate(String dateString)
-            throws TaskCreationException {
-        try {
-            return TaskFactory.parseDate(dateString);
-        } catch (DateTimeParseException e) {
-            throw TaskCreationException.declareInvalidDateFormat(dateString);
-        }
-    }
-
     private static RecurringTaskDetails parseDetails(String command)
             throws TaskCreationException {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
@@ -102,22 +93,34 @@ class RecurringTaskFactory {
                 TASK_TYPE, fieldName, CORRECT_FORMAT, EXAMPLE_COMMAND);
     }
 
+    private static LocalDate parseDate(String dateString)
+            throws TaskCreationException {
+        try {
+            return TaskFactory.parseDate(dateString);
+        } catch (DateTimeParseException e) {
+            throw TaskCreationException.declareInvalidDateFormat(dateString);
+        }
+    }
+
     private static Period parseRecurrence(String recurrence) throws TaskCreationException {
         String[] components = recurrence.trim().split("\\s+");
         boolean isDayUnit = components.length == 2
                 && (components[1].equals("day") || components[1].equals("days"));
         if (!isDayUnit) {
-            throw TaskCreationException.declareInvalidDateFormat(recurrence);
+            throw TaskCreationException.declareInvalidRecurrenceFormat(
+                    recurrence, CORRECT_FORMAT, EXAMPLE_COMMAND);
         }
 
         int days;
         try {
             days = Integer.parseInt(components[0]);
         } catch (NumberFormatException e) {
-            throw TaskCreationException.declareInvalidDateFormat(recurrence);
+            throw TaskCreationException.declareInvalidRecurrenceFormat(
+                    recurrence, CORRECT_FORMAT, EXAMPLE_COMMAND);
         }
         if (days <= 0) {
-            throw TaskCreationException.declareInvalidDateFormat(recurrence);
+            throw TaskCreationException.declareInvalidRecurrenceFormat(
+                    recurrence, CORRECT_FORMAT, EXAMPLE_COMMAND);
         }
         return Period.ofDays(days);
     }

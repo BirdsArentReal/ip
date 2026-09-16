@@ -55,4 +55,14 @@ public class TaskCreationException extends TaskException {
                 + "Please enter a valid date range, as the duchess\n"
                 + "is not a time traveller.", from, to));
     }
+    /** Creates an exception for an invalid recurrence format. */
+    public static TaskCreationException declareInvalidRecurrenceFormat(
+            String recurrence, String correctFormat, String exampleCommand) {
+        return new TaskCreationException(String.format(
+                "The recurrence \"%s\" is invalid.\n"
+                + "Please specify recurrence in the format: N days.\n"
+                + "Please enter the command in the format: %s\n"
+                + "Example: %s",
+                recurrence, correctFormat, exampleCommand));
+    }
 }
