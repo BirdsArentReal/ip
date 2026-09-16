@@ -32,8 +32,9 @@ class DeadlineFactory {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
 
         return new DeadlineDetails(
-                command.substring(TASK_TYPE.length(), byIndex).trim(),
-                command.substring(byIndex + BY_MARKER.length()).trim());
+                TaskFactory.readCommand(command, TASK_TYPE.length(), byIndex),
+                TaskFactory.readCommand(
+                        command, byIndex + BY_MARKER.length(), command.length()));
     }
 
     private static void validateDetails(DeadlineDetails details)

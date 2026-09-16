@@ -44,17 +44,21 @@ class EventFactory {
     private static EventDetails parseNormalMarkerOrder(
             String command, int fromIndex, int toIndex) {
         return new EventDetails(
-                command.substring(TASK_TYPE.length(), fromIndex).trim(),
-                command.substring(fromIndex + FROM_MARKER.length(), toIndex).trim(),
-                command.substring(toIndex + TO_MARKER.length()).trim());
+                TaskFactory.readCommand(command, TASK_TYPE.length(), fromIndex),
+                TaskFactory.readCommand(
+                        command, fromIndex + FROM_MARKER.length(), toIndex),
+                TaskFactory.readCommand(
+                        command, toIndex + TO_MARKER.length(), command.length()));
     }
 
     private static EventDetails parseReversedMarkerOrder(
             String command, int fromIndex, int toIndex) {
         return new EventDetails(
-                command.substring(TASK_TYPE.length(), toIndex).trim(),
-                command.substring(fromIndex + FROM_MARKER.length()).trim(),
-                command.substring(toIndex + TO_MARKER.length(), fromIndex).trim());
+                TaskFactory.readCommand(command, TASK_TYPE.length(), toIndex),
+                TaskFactory.readCommand(
+                        command, fromIndex + FROM_MARKER.length(), command.length()),
+                TaskFactory.readCommand(
+                        command, toIndex + TO_MARKER.length(), fromIndex));
     }
 
     private static void validateDetails(EventDetails details) throws TaskException {

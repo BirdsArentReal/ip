@@ -36,6 +36,10 @@ public class TaskFactory {
         return location;
     }
 
+    static String readCommand(String command, int start, int end) {
+        return command.substring(start, end).trim();
+    }
+
     /**
      * Checks if a command contains invalid characters.
      */

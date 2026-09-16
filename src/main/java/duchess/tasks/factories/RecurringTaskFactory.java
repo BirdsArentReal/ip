@@ -45,17 +45,21 @@ class RecurringTaskFactory {
     private static RecurringTaskDetails parseNormalMarkerOrder(
             String command, int byIndex, int repeatIndex) {
         return new RecurringTaskDetails(
-                command.substring(TASK_TYPE.length(), byIndex).trim(),
-                command.substring(byIndex + BY_MARKER.length(), repeatIndex).trim(),
-                command.substring(repeatIndex + REPEAT_MARKER.length()).trim());
+                TaskFactory.readCommand(command, TASK_TYPE.length(), byIndex),
+                TaskFactory.readCommand(
+                        command, byIndex + BY_MARKER.length(), repeatIndex),
+                TaskFactory.readCommand(
+                        command, repeatIndex + REPEAT_MARKER.length(), command.length()));
     }
 
     private static RecurringTaskDetails parseReversedMarkerOrder(
             String command, int byIndex, int repeatIndex) {
         return new RecurringTaskDetails(
-                command.substring(TASK_TYPE.length(), repeatIndex).trim(),
-                command.substring(byIndex + BY_MARKER.length()).trim(),
-                command.substring(repeatIndex + REPEAT_MARKER.length(), byIndex).trim());
+                TaskFactory.readCommand(command, TASK_TYPE.length(), repeatIndex),
+                TaskFactory.readCommand(
+                        command, byIndex + BY_MARKER.length(), command.length()),
+                TaskFactory.readCommand(
+                        command, repeatIndex + REPEAT_MARKER.length(), byIndex));
     }
 
     private static void validateDetails(RecurringTaskDetails details)
