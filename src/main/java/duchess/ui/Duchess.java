@@ -87,10 +87,8 @@ public class Duchess {
                 case DELETE -> this.handleDeleteTask(userInput);
                 case FIND -> this.handleFind(userInput);
                 case FIND_EXACT -> this.handleFindExact(userInput);
-                default -> throw new DuchessException(String.format(
-                        "The duchess does not understand what you mean by %s.\n"
-                                + "Please enter valid commands only.",
-                        userInput));
+                default -> throw DuchessException
+                        .declareUnrecognizedCommand(userInput);
             };
         } catch (DuchessException | TaskException e) {
             return e.getMessage();
