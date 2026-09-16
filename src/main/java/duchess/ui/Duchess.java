@@ -196,7 +196,7 @@ public class Duchess {
     private String handleFind(String command) throws FindException {
         String keyword = command.substring("find".length()).trim();
         if (keyword.isEmpty()) {
-            throw FindException.declareEmptySearchKeyword();
+            throw FindException.declareEmptyFindKeyword();
         }
 
         return this.tasks.getTasksMatching(keyword.split(" ", -1));
@@ -211,7 +211,7 @@ public class Duchess {
     private String handleFindExact(String command) throws FindException {
         String keyword = command.substring("find -e".length()).trim();
         if (keyword.isEmpty()) {
-            throw FindException.declareEmptySearchKeyword();
+            throw FindException.declareEmptyFindExactKeyword();
         }
 
         return this.tasks.getTasksMatching(keyword);
