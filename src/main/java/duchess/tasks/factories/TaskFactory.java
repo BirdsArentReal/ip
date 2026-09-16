@@ -14,12 +14,8 @@ import duchess.tasks.exceptions.TaskCreationException;
 public class TaskFactory {
     private static final char[] INVALID_CHARACTERS = new char[]{'|'};
 
-    static LocalDate parseDate(String dateStr) throws TaskCreationException {
-        try {
-            return LocalDate.parse(dateStr, DateFormat.PARSE_FORMAT);
-        } catch (DateTimeParseException e) {
-            throw TaskCreationException.declareInvalidDateFormat(dateStr);
-        }
+    static LocalDate parseDate(String dateStr) throws DateTimeParseException {
+        return LocalDate.parse(dateStr, DateFormat.PARSE_FORMAT);
     }
 
     static int findMarker(String command, String marker) {

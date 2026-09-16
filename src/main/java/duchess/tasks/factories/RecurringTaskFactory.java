@@ -2,6 +2,7 @@ package duchess.tasks.factories;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeParseException;
 
 import duchess.tasks.RecurringTask;
 import duchess.tasks.exceptions.TaskCreationException;
@@ -30,10 +31,19 @@ class RecurringTaskFactory {
         RecurringTaskDetails details = parseDetails(command);
         validateDetails(details);
 
-        LocalDate byDate = TaskFactory.parseDate(details.getByString());
+        LocalDate byDate = RecurringTaskFactory.parseDate(details.getByString());
         Period recurrence = parseRecurrence(details.getRepeatString());
 
         return new RecurringTask(details.getDescription(), byDate, recurrence);
+    }
+
+    private static LocalDate parseDate(String dateString)
+            throws TaskCreationException {
+        try {
+            return TaskFactory.parseDate(dateString);
+        } catch (DateTimeParseException e) {
+            throw TaskCreationException.declareInvalidDateFormat(dateString);
+        }
     }
 
     private static RecurringTaskDetails parseDetails(String command)

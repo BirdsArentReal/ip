@@ -1,6 +1,7 @@
 package duchess.tasks.factories;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import duchess.tasks.Deadline;
 import duchess.tasks.exceptions.TaskCreationException;
@@ -27,8 +28,17 @@ class DeadlineFactory {
         DeadlineDetails details = parseDetails(command);
         validateDetails(details);
 
-        LocalDate byDate = TaskFactory.parseDate(details.getByString());
+        LocalDate byDate = DeadlineFactory.parseDate(details.getByString());
         return new Deadline(details.getDescription(), byDate);
+    }
+
+    private static LocalDate parseDate(String dateString)
+            throws TaskCreationException {
+        try {
+            return TaskFactory.parseDate(dateString);
+        } catch (DateTimeParseException e) {
+            throw TaskCreationException.declareInvalidDateFormat(dateString);
+        }
     }
 
     private static DeadlineDetails parseDetails(String command)

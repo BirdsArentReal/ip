@@ -1,6 +1,7 @@
 package duchess.tasks.factories;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import duchess.tasks.Event;
 import duchess.tasks.exceptions.TaskCreationException;
@@ -29,11 +30,20 @@ class EventFactory {
         EventDetails details = parseDetails(command);
         validateDetails(details);
 
-        LocalDate from = TaskFactory.parseDate(details.getFromString());
-        LocalDate to = TaskFactory.parseDate(details.getToString());
+        LocalDate from = EventFactory.parseDate(details.getFromString());
+        LocalDate to = EventFactory.parseDate(details.getToString());
         validateDateRange(details, from, to);
 
         return new Event(details.getDescription(), from, to);
+    }
+
+    private static LocalDate parseDate(String dateString)
+            throws TaskCreationException {
+        try {
+            return TaskFactory.parseDate(dateString);
+        } catch (DateTimeParseException e) {
+            throw TaskCreationException.declareInvalidDateFormat(dateString);
+        }
     }
 
     private static EventDetails parseDetails(String command) throws TaskCreationException {

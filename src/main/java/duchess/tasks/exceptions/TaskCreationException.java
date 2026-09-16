@@ -1,5 +1,7 @@
 package duchess.tasks.exceptions;
 
+import duchess.tasks.DateFormat;
+
 /** Represents errors encountered while creating a task. */
 public class TaskCreationException extends TaskException {
     private TaskCreationException(String message) {
@@ -43,8 +45,12 @@ public class TaskCreationException extends TaskException {
     /** Creates an exception for an invalid date format. */
     public static TaskCreationException declareInvalidDateFormat(String dateStr) {
         return new TaskCreationException(String.format(
-                "The date \"%s\" is not in a valid format. \n"
-                + " Please enter your date in yyyy-MM-dd format.", dateStr));
+                "The date \"%s\" is not in a valid format.\n"
+                + "Please enter the date in the format: %s.\n"
+                + "Example: %s",
+                dateStr,
+                DateFormat.PARSE_FORMAT_STRING,
+                DateFormat.PARSE_FORMAT_EXAMPLE));
     }
 
     /** Creates an exception for an invalid event date range. */
