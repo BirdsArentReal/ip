@@ -3,7 +3,7 @@ package duchess.tasks.factories;
 import java.time.LocalDate;
 
 import duchess.tasks.Event;
-import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.exceptions.TaskCreationException;
 
 /** Creates {@link Event} tasks from user commands. */
 class EventFactory {
@@ -18,10 +18,10 @@ class EventFactory {
     /**
      * Creates an event task from a command.
      *
-     * @throws TaskException if required information, valid dates, or a valid
+     * @throws TaskCreationException if required information, valid dates, or a valid
      *                       date range is missing
      */
-    static Event create(String command) throws TaskException {
+    static Event create(String command) throws TaskCreationException {
         EventDetails details = parseDetails(command);
         validateDetails(details);
 
@@ -32,7 +32,7 @@ class EventFactory {
         return new Event(details.getDescription(), from, to);
     }
 
-    private static EventDetails parseDetails(String command) throws TaskException {
+    private static EventDetails parseDetails(String command) throws TaskCreationException {
         int fromIndex = TaskFactory.findMarker(command, FROM_MARKER);
         int toIndex = TaskFactory.findMarker(command, TO_MARKER);
 
@@ -61,22 +61,22 @@ class EventFactory {
                         command, toIndex + TO_MARKER.length(), fromIndex));
     }
 
-    private static void validateDetails(EventDetails details) throws TaskException {
+    private static void validateDetails(EventDetails details) throws TaskCreationException {
         if (details.getDescription().isEmpty()) {
-            throw TaskException.declareEmptyDescription(TASK_TYPE);
+            throw TaskCreationException.declareEmptyDescription(TASK_TYPE);
         }
         if (details.getFromString().isEmpty()) {
-            throw TaskException.declareMissingField(TASK_TYPE, FROM_MARKER);
+            throw TaskCreationException.declareMissingField(TASK_TYPE, FROM_MARKER);
         }
         if (details.getToString().isEmpty()) {
-            throw TaskException.declareMissingField(TASK_TYPE, TO_MARKER);
+            throw TaskCreationException.declareMissingField(TASK_TYPE, TO_MARKER);
         }
     }
 
     private static void validateDateRange(EventDetails details,
-            LocalDate from, LocalDate to) throws TaskException {
+            LocalDate from, LocalDate to) throws TaskCreationException {
         if (from.isAfter(to)) {
-            throw TaskException.declareInvalidDateRange(
+            throw TaskCreationException.declareInvalidDateRange(
                     details.getFromString(), details.getToString());
         }
     }

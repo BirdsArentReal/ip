@@ -3,7 +3,7 @@ package duchess.tasks.factories;
 import java.time.LocalDate;
 
 import duchess.tasks.Deadline;
-import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.exceptions.TaskCreationException;
 
 /** Creates {@link Deadline} tasks from user commands. */
 class DeadlineFactory {
@@ -17,9 +17,9 @@ class DeadlineFactory {
     /**
      * Creates a deadline task from a command.
      *
-     * @throws TaskException if required information or a valid date is missing
+     * @throws TaskCreationException if required information or a valid date is missing
      */
-    static Deadline create(String command) throws TaskException {
+    static Deadline create(String command) throws TaskCreationException {
         DeadlineDetails details = parseDetails(command);
         validateDetails(details);
 
@@ -28,7 +28,7 @@ class DeadlineFactory {
     }
 
     private static DeadlineDetails parseDetails(String command)
-            throws TaskException {
+            throws TaskCreationException {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
 
         return new DeadlineDetails(
@@ -38,12 +38,12 @@ class DeadlineFactory {
     }
 
     private static void validateDetails(DeadlineDetails details)
-            throws TaskException {
+            throws TaskCreationException {
         if (details.getDescription().isEmpty()) {
-            throw TaskException.declareEmptyDescription(TASK_TYPE);
+            throw TaskCreationException.declareEmptyDescription(TASK_TYPE);
         }
         if (details.getByString().isEmpty()) {
-            throw TaskException.declareMissingField(TASK_TYPE, BY_MARKER);
+            throw TaskCreationException.declareMissingField(TASK_TYPE, BY_MARKER);
         }
     }
 

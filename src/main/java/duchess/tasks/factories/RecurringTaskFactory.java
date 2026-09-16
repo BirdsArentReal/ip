@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 import duchess.tasks.RecurringTask;
-import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.exceptions.TaskCreationException;
 
 /** Creates {@link RecurringTask} tasks from user commands. */
 class RecurringTaskFactory {
@@ -19,10 +19,10 @@ class RecurringTaskFactory {
     /**
      * Creates a recurring task from a command.
      *
-     * @throws TaskException if required information, a valid date, or a valid
+     * @throws TaskCreationException if required information, a valid date, or a valid
      *                       recurrence is missing
      */
-    static RecurringTask create(String command) throws TaskException {
+    static RecurringTask create(String command) throws TaskCreationException {
         RecurringTaskDetails details = parseDetails(command);
         validateDetails(details);
 
@@ -33,7 +33,7 @@ class RecurringTaskFactory {
     }
 
     private static RecurringTaskDetails parseDetails(String command)
-            throws TaskException {
+            throws TaskCreationException {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
         int repeatIndex = TaskFactory.findMarker(command, REPEAT_MARKER);
 
@@ -63,34 +63,34 @@ class RecurringTaskFactory {
     }
 
     private static void validateDetails(RecurringTaskDetails details)
-            throws TaskException {
+            throws TaskCreationException {
         if (details.getDescription().isEmpty()) {
-            throw TaskException.declareEmptyDescription(TASK_TYPE);
+            throw TaskCreationException.declareEmptyDescription(TASK_TYPE);
         }
         if (details.getByString().isEmpty()) {
-            throw TaskException.declareMissingField(TASK_TYPE, BY_MARKER);
+            throw TaskCreationException.declareMissingField(TASK_TYPE, BY_MARKER);
         }
         if (details.getRepeatString().isEmpty()) {
-            throw TaskException.declareMissingField(TASK_TYPE, REPEAT_MARKER);
+            throw TaskCreationException.declareMissingField(TASK_TYPE, REPEAT_MARKER);
         }
     }
 
-    private static Period parseRecurrence(String recurrence) throws TaskException {
+    private static Period parseRecurrence(String recurrence) throws TaskCreationException {
         String[] components = recurrence.trim().split("\\s+");
         boolean isDayUnit = components.length == 2
                 && (components[1].equals("day") || components[1].equals("days"));
         if (!isDayUnit) {
-            throw TaskException.declareInvalidDateFormat(recurrence);
+            throw TaskCreationException.declareInvalidDateFormat(recurrence);
         }
 
         int days;
         try {
             days = Integer.parseInt(components[0]);
         } catch (NumberFormatException e) {
-            throw TaskException.declareInvalidDateFormat(recurrence);
+            throw TaskCreationException.declareInvalidDateFormat(recurrence);
         }
         if (days <= 0) {
-            throw TaskException.declareInvalidDateFormat(recurrence);
+            throw TaskCreationException.declareInvalidDateFormat(recurrence);
         }
         return Period.ofDays(days);
     }

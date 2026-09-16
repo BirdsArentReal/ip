@@ -11,6 +11,7 @@ import duchess.io.exceptions.StorageException;
 import duchess.tasks.Task;
 import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.exceptions.TaskCreationException;
 import duchess.tasks.factories.TaskFactory;
 
 /**
@@ -190,7 +191,7 @@ public class Storage {
             markIfComplete(task, components[TASK_STATUS_INDEX]);
             return task;
         } catch (StorageException e) {
-            throw TaskException.declareUnrecognisedCommand(line);
+            throw TaskCreationException.declareUnrecognisedCommand(line);
         }
     }
 

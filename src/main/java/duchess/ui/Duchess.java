@@ -9,6 +9,7 @@ import duchess.parse.CommandType;
 import duchess.tasks.Task;
 import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.FindException;
+import duchess.tasks.exceptions.TaskCreationException;
 import duchess.tasks.exceptions.TaskException;
 import duchess.tasks.factories.TaskFactory;
 import duchess.ui.exceptions.DuchessException;
@@ -125,10 +126,10 @@ public class Duchess {
      * @param command The user input.
      * @return A string representing the
      *          changes to the list of tasks.
-     * @throws TaskException If the task could not be
+     * @throws TaskCreationException If the task could not be
      *                          created from the command.
      */
-    private String handleAddTask(String command) throws TaskException {
+    private String handleAddTask(String command) throws TaskCreationException {
         Task newTask = TaskFactory.createFromCommand(command);
         return this.tasks.addTaskIfNotExist(newTask);
     }
