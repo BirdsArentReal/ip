@@ -23,34 +23,52 @@ class RecurringTaskFactory {
      *                       recurrence is missing
      */
     static RecurringTask create(String command) throws TaskException {
+        RecurringTaskDetails details = parseDetails(command);
+        validateDetails(details);
+
+        LocalDate byDate = TaskFactory.parseDate(details.getByString());
+        Period recurrence = parseRecurrence(details.getRepeatString());
+
+        return new RecurringTask(details.getDescription(), byDate, recurrence);
+    }
+
+    private static RecurringTaskDetails parseDetails(String command)
+            throws TaskException {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
         int repeatIndex = TaskFactory.findMarker(command, REPEAT_MARKER);
-        String description;
-        String byString;
-        String repeatString;
 
-        if (byIndex < repeatIndex) {
-            description = command.substring(TASK_TYPE.length(), byIndex).trim();
-            byString = command.substring(byIndex + BY_MARKER.length(), repeatIndex).trim();
-            repeatString = command.substring(repeatIndex + REPEAT_MARKER.length()).trim();
-        } else {
-            description = command.substring(TASK_TYPE.length(), repeatIndex).trim();
-            repeatString = command.substring(repeatIndex + REPEAT_MARKER.length(), byIndex).trim();
-            byString = command.substring(byIndex + BY_MARKER.length()).trim();
-        }
+        return byIndex < repeatIndex
+                ? parseNormalMarkerOrder(command, byIndex, repeatIndex)
+                : parseReversedMarkerOrder(command, byIndex, repeatIndex);
+    }
 
-        if (description.isEmpty()) {
+    private static RecurringTaskDetails parseNormalMarkerOrder(
+            String command, int byIndex, int repeatIndex) {
+        return new RecurringTaskDetails(
+                command.substring(TASK_TYPE.length(), byIndex).trim(),
+                command.substring(byIndex + BY_MARKER.length(), repeatIndex).trim(),
+                command.substring(repeatIndex + REPEAT_MARKER.length()).trim());
+    }
+
+    private static RecurringTaskDetails parseReversedMarkerOrder(
+            String command, int byIndex, int repeatIndex) {
+        return new RecurringTaskDetails(
+                command.substring(TASK_TYPE.length(), repeatIndex).trim(),
+                command.substring(byIndex + BY_MARKER.length()).trim(),
+                command.substring(repeatIndex + REPEAT_MARKER.length(), byIndex).trim());
+    }
+
+    private static void validateDetails(RecurringTaskDetails details)
+            throws TaskException {
+        if (details.getDescription().isEmpty()) {
             throw TaskException.declareEmptyDescription(TASK_TYPE);
         }
-        if (byString.isEmpty()) {
+        if (details.getByString().isEmpty()) {
             throw TaskException.declareMissingField(TASK_TYPE, BY_MARKER);
         }
-        if (repeatString.isEmpty()) {
+        if (details.getRepeatString().isEmpty()) {
             throw TaskException.declareMissingField(TASK_TYPE, REPEAT_MARKER);
         }
-
-        return new RecurringTask(description, TaskFactory.parseDate(byString),
-                parseRecurrence(repeatString));
     }
 
     private static Period parseRecurrence(String recurrence) throws TaskException {
@@ -71,5 +89,30 @@ class RecurringTaskFactory {
             throw TaskException.declareInvalidDateFormat(recurrence);
         }
         return Period.ofDays(days);
+    }
+
+    /** Holds the textual fields extracted from a recurring task command. */
+    private static class RecurringTaskDetails {
+        private final String description;
+        private final String byString;
+        private final String repeatString;
+
+        RecurringTaskDetails(String description, String byString, String repeatString) {
+            this.description = description;
+            this.byString = byString;
+            this.repeatString = repeatString;
+        }
+
+        String getDescription() {
+            return description;
+        }
+
+        String getByString() {
+            return byString;
+        }
+
+        String getRepeatString() {
+            return repeatString;
+        }
     }
 }
