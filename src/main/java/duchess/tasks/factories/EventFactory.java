@@ -7,6 +7,7 @@ import duchess.tasks.exceptions.TaskException;
 
 /** Creates {@link Event} tasks from user commands. */
 class EventFactory {
+    private static final String TASK_TYPE = "event";
     private static final String FROM_MARKER = "/from";
     private static final String TO_MARKER = "/to";
 
@@ -28,23 +29,23 @@ class EventFactory {
         String toString;
 
         if (toIndex < fromIndex) {
-            description = command.substring("event".length(), toIndex).trim();
+            description = command.substring(TASK_TYPE.length(), toIndex).trim();
             fromString = command.substring(fromIndex + FROM_MARKER.length()).trim();
             toString = command.substring(toIndex + TO_MARKER.length(), fromIndex).trim();
         } else {
-            description = command.substring("event".length(), fromIndex).trim();
+            description = command.substring(TASK_TYPE.length(), fromIndex).trim();
             fromString = command.substring(fromIndex + FROM_MARKER.length(), toIndex).trim();
             toString = command.substring(toIndex + TO_MARKER.length()).trim();
         }
 
         if (description.isEmpty()) {
-            throw TaskException.declareEmptyDescription("event");
+            throw TaskException.declareEmptyDescription(TASK_TYPE);
         }
         if (fromString.isEmpty()) {
-            throw TaskException.declareMissingField("event", FROM_MARKER);
+            throw TaskException.declareMissingField(TASK_TYPE, FROM_MARKER);
         }
         if (toString.isEmpty()) {
-            throw TaskException.declareMissingField("event", TO_MARKER);
+            throw TaskException.declareMissingField(TASK_TYPE, TO_MARKER);
         }
 
         LocalDate from = TaskFactory.parseDate(fromString);

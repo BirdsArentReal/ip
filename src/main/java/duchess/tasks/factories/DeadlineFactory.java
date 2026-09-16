@@ -7,6 +7,7 @@ import duchess.tasks.exceptions.TaskException;
 
 /** Creates {@link Deadline} tasks from user commands. */
 class DeadlineFactory {
+    private static final String TASK_TYPE = "deadline";
     private static final String BY_MARKER = "/by";
 
     private DeadlineFactory() {
@@ -20,14 +21,14 @@ class DeadlineFactory {
      */
     static Deadline create(String command) throws TaskException {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
-        String description = command.substring("deadline".length(), byIndex).trim();
+        String description = command.substring(TASK_TYPE.length(), byIndex).trim();
         String byString = command.substring(byIndex + BY_MARKER.length()).trim();
 
         if (description.isEmpty()) {
-            throw TaskException.declareEmptyDescription("deadline");
+            throw TaskException.declareEmptyDescription(TASK_TYPE);
         }
         if (byString.isEmpty()) {
-            throw TaskException.declareMissingField("deadline", BY_MARKER);
+            throw TaskException.declareMissingField(TASK_TYPE, BY_MARKER);
         }
         return new Deadline(description, TaskFactory.parseDate(byString));
     }

@@ -5,6 +5,8 @@ import duchess.tasks.exceptions.TaskException;
 
 /** Creates {@link ToDo} tasks from user commands. */
 class TodoFactory {
+    private static final String TASK_TYPE = "todo";
+
     private TodoFactory() {
         // Utility class.
     }
@@ -15,9 +17,9 @@ class TodoFactory {
      * @throws TaskException if the description is empty
      */
     static ToDo create(String command) throws TaskException {
-        String description = command.substring("todo".length()).trim();
+        String description = command.substring(TASK_TYPE.length()).trim();
         if (description.isEmpty()) {
-            throw TaskException.declareEmptyDescription("todo");
+            throw TaskException.declareEmptyDescription(TASK_TYPE);
         }
         return new ToDo(description);
     }

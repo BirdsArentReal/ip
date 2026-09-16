@@ -8,6 +8,7 @@ import duchess.tasks.exceptions.TaskException;
 
 /** Creates {@link RecurringTask} tasks from user commands. */
 class RecurringTaskFactory {
+    private static final String TASK_TYPE = "recurring";
     private static final String BY_MARKER = "/by";
     private static final String REPEAT_MARKER = "/repeat";
 
@@ -29,23 +30,23 @@ class RecurringTaskFactory {
         String repeatString;
 
         if (byIndex < repeatIndex) {
-            description = command.substring("recurring".length(), byIndex).trim();
+            description = command.substring(TASK_TYPE.length(), byIndex).trim();
             byString = command.substring(byIndex + BY_MARKER.length(), repeatIndex).trim();
             repeatString = command.substring(repeatIndex + REPEAT_MARKER.length()).trim();
         } else {
-            description = command.substring("recurring".length(), repeatIndex).trim();
+            description = command.substring(TASK_TYPE.length(), repeatIndex).trim();
             repeatString = command.substring(repeatIndex + REPEAT_MARKER.length(), byIndex).trim();
             byString = command.substring(byIndex + BY_MARKER.length()).trim();
         }
 
         if (description.isEmpty()) {
-            throw TaskException.declareEmptyDescription("recurring");
+            throw TaskException.declareEmptyDescription(TASK_TYPE);
         }
         if (byString.isEmpty()) {
-            throw TaskException.declareMissingField("recurring", BY_MARKER);
+            throw TaskException.declareMissingField(TASK_TYPE, BY_MARKER);
         }
         if (repeatString.isEmpty()) {
-            throw TaskException.declareMissingField("recurring", REPEAT_MARKER);
+            throw TaskException.declareMissingField(TASK_TYPE, REPEAT_MARKER);
         }
 
         return new RecurringTask(description, TaskFactory.parseDate(byString),
