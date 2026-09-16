@@ -7,7 +7,6 @@ import java.util.Arrays;
 import duchess.tasks.DateFormat;
 import duchess.tasks.Task;
 import duchess.tasks.exceptions.TaskCreationException;
-import duchess.tasks.exceptions.TaskException;
 
 /**
  * Handles the creation of tasks.
@@ -23,18 +22,8 @@ public class TaskFactory {
         }
     }
 
-    private static String getCommandName(String command) {
-        return command.split(" ")[0];
-    }
-
-    static int findMarker(String command, String marker) throws TaskCreationException {
-        int location = command.indexOf(marker);
-        if (location == -1) {
-            // not in command
-            throw TaskCreationException.declareMissingField(getCommandName(command), marker);
-        }
-
-        return location;
+    static int findMarker(String command, String marker) {
+        return command.indexOf(marker);
     }
 
     static String readCommand(String command, int start, int end) {

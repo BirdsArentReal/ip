@@ -10,6 +10,10 @@ class EventFactory {
     private static final String TASK_TYPE = "event";
     private static final String FROM_MARKER = "/from";
     private static final String TO_MARKER = "/to";
+    private static final String CORRECT_FORMAT =
+            "event DESCRIPTION /from yyyy-MM-dd /to yyyy-MM-dd";
+    private static final String EXAMPLE_COMMAND =
+            "event attend meeting /from 2026-12-10 /to 2026-12-11";
 
     private EventFactory() {
         // Utility class.
@@ -34,7 +38,14 @@ class EventFactory {
 
     private static EventDetails parseDetails(String command) throws TaskCreationException {
         int fromIndex = TaskFactory.findMarker(command, FROM_MARKER);
+        if (fromIndex == -1) {
+            EventFactory.declareMissingField(FROM_MARKER);
+        }
+
         int toIndex = TaskFactory.findMarker(command, TO_MARKER);
+        if (toIndex == -1) {
+            EventFactory.declareMissingField(TO_MARKER);
+        }
 
         return toIndex < fromIndex
                 ? parseReversedMarkerOrder(command, fromIndex, toIndex)
@@ -66,11 +77,17 @@ class EventFactory {
             throw TaskCreationException.declareEmptyDescription(TASK_TYPE);
         }
         if (details.getFromString().isEmpty()) {
-            throw TaskCreationException.declareMissingField(TASK_TYPE, FROM_MARKER);
+            EventFactory.declareMissingField(FROM_MARKER);
         }
         if (details.getToString().isEmpty()) {
-            throw TaskCreationException.declareMissingField(TASK_TYPE, TO_MARKER);
+            EventFactory.declareMissingField(TO_MARKER);
         }
+    }
+
+    private static void declareMissingField(String fieldName)
+            throws TaskCreationException {
+        throw TaskCreationException.declareMissingField(
+                TASK_TYPE, fieldName, CORRECT_FORMAT, EXAMPLE_COMMAND);
     }
 
     private static void validateDateRange(EventDetails details,

@@ -23,11 +23,15 @@ public class TaskCreationException extends TaskException {
 
     /** Creates an exception for a missing field in a task command. */
     public static TaskCreationException declareMissingField(
-            String command, String fieldName) {
+            String command,
+            String fieldName,
+            String correctFormat,
+            String exampleCommand) {
         return new TaskCreationException(String.format(
                 "The %s command requires a %s field.\n"
-                + "Please re-enter your command with %s [date].",
-                command, fieldName, fieldName));
+                + "Please enter the command in the format: %s\n"
+                + "Example: %s",
+                command, fieldName, correctFormat, exampleCommand));
     }
 
     /** Creates an exception for an unrecognised task command. */

@@ -9,6 +9,10 @@ import duchess.tasks.exceptions.TaskCreationException;
 class DeadlineFactory {
     private static final String TASK_TYPE = "deadline";
     private static final String BY_MARKER = "/by";
+    private static final String CORRECT_FORMAT =
+            "deadline DESCRIPTION /by yyyy-MM-dd";
+    private static final String EXAMPLE_COMMAND =
+            "deadline clean the house /by 2026-12-10";
 
     private DeadlineFactory() {
         // Utility class.
@@ -30,6 +34,9 @@ class DeadlineFactory {
     private static DeadlineDetails parseDetails(String command)
             throws TaskCreationException {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
+        if (byIndex == -1) {
+            DeadlineFactory.declareMissingField(BY_MARKER);
+        }
 
         return new DeadlineDetails(
                 TaskFactory.readCommand(command, TASK_TYPE.length(), byIndex),
@@ -43,8 +50,14 @@ class DeadlineFactory {
             throw TaskCreationException.declareEmptyDescription(TASK_TYPE);
         }
         if (details.getByString().isEmpty()) {
-            throw TaskCreationException.declareMissingField(TASK_TYPE, BY_MARKER);
+            DeadlineFactory.declareMissingField(BY_MARKER);
         }
+    }
+
+    private static void declareMissingField(String fieldName)
+            throws TaskCreationException {
+        throw TaskCreationException.declareMissingField(
+                TASK_TYPE, fieldName, CORRECT_FORMAT, EXAMPLE_COMMAND);
     }
 
     /** Holds the textual fields extracted from a deadline command. */

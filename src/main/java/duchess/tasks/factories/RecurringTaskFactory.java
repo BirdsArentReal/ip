@@ -11,6 +11,10 @@ class RecurringTaskFactory {
     private static final String TASK_TYPE = "recurring";
     private static final String BY_MARKER = "/by";
     private static final String REPEAT_MARKER = "/repeat";
+    private static final String CORRECT_FORMAT =
+            "recurring DESCRIPTION /by yyyy-MM-dd /repeat N days";
+    private static final String EXAMPLE_COMMAND =
+            "recurring exercise /by 2026-12-10 /repeat 2 days";
 
     private RecurringTaskFactory() {
         // Utility class.
@@ -35,7 +39,14 @@ class RecurringTaskFactory {
     private static RecurringTaskDetails parseDetails(String command)
             throws TaskCreationException {
         int byIndex = TaskFactory.findMarker(command, BY_MARKER);
+        if (byIndex == -1) {
+            RecurringTaskFactory.declareMissingField(BY_MARKER);
+        }
+
         int repeatIndex = TaskFactory.findMarker(command, REPEAT_MARKER);
+        if (repeatIndex == -1) {
+            RecurringTaskFactory.declareMissingField(REPEAT_MARKER);
+        }
 
         return byIndex < repeatIndex
                 ? parseNormalMarkerOrder(command, byIndex, repeatIndex)
@@ -68,11 +79,17 @@ class RecurringTaskFactory {
             throw TaskCreationException.declareEmptyDescription(TASK_TYPE);
         }
         if (details.getByString().isEmpty()) {
-            throw TaskCreationException.declareMissingField(TASK_TYPE, BY_MARKER);
+            RecurringTaskFactory.declareMissingField(BY_MARKER);
         }
         if (details.getRepeatString().isEmpty()) {
-            throw TaskCreationException.declareMissingField(TASK_TYPE, REPEAT_MARKER);
+            RecurringTaskFactory.declareMissingField(REPEAT_MARKER);
         }
+    }
+
+    private static void declareMissingField(String fieldName)
+            throws TaskCreationException {
+        throw TaskCreationException.declareMissingField(
+                TASK_TYPE, fieldName, CORRECT_FORMAT, EXAMPLE_COMMAND);
     }
 
     private static Period parseRecurrence(String recurrence) throws TaskCreationException {
