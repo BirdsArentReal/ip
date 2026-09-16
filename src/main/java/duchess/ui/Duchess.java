@@ -8,7 +8,9 @@ import duchess.io.Storage;
 import duchess.parse.CommandType;
 import duchess.tasks.Task;
 import duchess.tasks.collections.TaskList;
+import duchess.tasks.exceptions.FindException;
 import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.exceptions.UnrecognizedCommandException;
 import duchess.tasks.factories.TaskFactory;
 import duchess.ui.exceptions.DuchessException;
 
@@ -17,6 +19,12 @@ import duchess.ui.exceptions.DuchessException;
  */
 public class Duchess {
     public static final String NAME = "Duchess";
+    private static final String MARK_FORMAT = "mark INDEX";
+    private static final String MARK_EXAMPLE = "mark 1";
+    private static final String UNMARK_FORMAT = "unmark INDEX";
+    private static final String UNMARK_EXAMPLE = "unmark 1";
+    private static final String DELETE_FORMAT = "delete INDEX";
+    private static final String DELETE_EXAMPLE = "delete 1";
 
     private final TaskList tasks;
     private final Storage db;
@@ -79,16 +87,11 @@ public class Duchess {
                 case DELETE -> this.handleDeleteTask(userInput);
                 case FIND -> this.handleFind(userInput);
                 case FIND_EXACT -> this.handleFindExact(userInput);
-                default -> throw new DuchessException(String.format(
-                        "The duchess does not understand what you mean by %s.\n"
-                                + "Please enter valid commands only.",
-                        userInput));
+                default -> throw DuchessException
+                        .declareUnrecognizedCommand(userInput);
             };
         } catch (DuchessException | TaskException e) {
             return e.getMessage();
-        } catch (NumberFormatException n) {
-            return "Error: The command " + userInput
-                    + " only works with valid integers!";
         }
     }
 
@@ -138,10 +141,15 @@ public class Duchess {
      * @param command The user input.
      * @return A string representing the result of the deletion.
      */
-    private String handleDeleteTask(String command) {
-        String arg = command.substring(7).trim(); // after "delete "
-        int idx = Integer.parseInt(arg);
-        return this.tasks.deleteTaskFromIndex(idx);
+    private String handleDeleteTask(String command) throws UnrecognizedCommandException {
+        String arg = command.substring("delete".length()).trim(); // after "delete "
+        try {
+            int idx = Integer.parseInt(arg);
+            return this.tasks.deleteTaskFromIndex(idx);
+        } catch (NumberFormatException e) {
+            throw UnrecognizedCommandException.declareWithFormatAndExample(
+                    command, DELETE_FORMAT, DELETE_EXAMPLE);
+        }
     }
 
     /**
@@ -151,10 +159,15 @@ public class Duchess {
      * @return A string representing
      *          the task marked as complete.
      */
-    private String handleMark(String command) {
-        String arg = command.substring(5).trim(); // after "mark "
-        int idx = Integer.parseInt(arg);
-        return this.tasks.markTaskAt(idx);
+    private String handleMark(String command) throws UnrecognizedCommandException {
+        String arg = command.substring("mark".length()).trim(); // after "mark "
+        try {
+            int idx = Integer.parseInt(arg);
+            return this.tasks.markTaskAt(idx);
+        } catch (NumberFormatException e) {
+            throw UnrecognizedCommandException.declareWithFormatAndExample(
+                    command, MARK_FORMAT, MARK_EXAMPLE);
+        }
     }
 
     /**
@@ -164,10 +177,15 @@ public class Duchess {
      * @return A string representing the task
      *          marked as incomplete.
      */
-    private String handleUnmark(String command) {
-        String arg = command.substring(7).trim(); // after "unmark "
-        int idx = Integer.parseInt(arg);
-        return this.tasks.unmarkTaskAt(idx);
+    private String handleUnmark(String command) throws UnrecognizedCommandException {
+        String arg = command.substring("unmark".length()).trim(); // after "unmark "
+        try {
+            int idx = Integer.parseInt(arg);
+            return this.tasks.unmarkTaskAt(idx);
+        } catch (NumberFormatException e) {
+            throw UnrecognizedCommandException.declareWithFormatAndExample(
+                    command, UNMARK_FORMAT, UNMARK_EXAMPLE);
+        }
     }
 
     /**
@@ -175,10 +193,10 @@ public class Duchess {
      * Text separated by spaces are treated as different keywords, and the result
      * only contains tasks whose description match all keywords.
      */
-    private String handleFind(String command) throws TaskException {
+    private String handleFind(String command) throws FindException {
         String keyword = command.substring("find".length()).trim();
         if (keyword.isEmpty()) {
-            throw TaskException.declareEmptySearchKeyword();
+            throw FindException.declareEmptyFindKeyword();
         }
 
         return this.tasks.getTasksMatching(keyword.split(" ", -1));
@@ -190,10 +208,10 @@ public class Duchess {
      * the entire keywords must be contained in the task description as
      * one continuous string, for the task to be displayed.
      */
-    private String handleFindExact(String command) throws TaskException {
+    private String handleFindExact(String command) throws FindException {
         String keyword = command.substring("find -e".length()).trim();
         if (keyword.isEmpty()) {
-            throw TaskException.declareEmptySearchKeyword();
+            throw FindException.declareEmptyFindExactKeyword();
         }
 
         return this.tasks.getTasksMatching(keyword);
