@@ -8,6 +8,7 @@ import duchess.io.Storage;
 import duchess.parse.CommandType;
 import duchess.tasks.Task;
 import duchess.tasks.collections.TaskList;
+import duchess.tasks.exceptions.FindException;
 import duchess.tasks.exceptions.TaskException;
 import duchess.tasks.factories.TaskFactory;
 import duchess.ui.exceptions.DuchessException;
@@ -175,10 +176,10 @@ public class Duchess {
      * Text separated by spaces are treated as different keywords, and the result
      * only contains tasks whose description match all keywords.
      */
-    private String handleFind(String command) throws TaskException {
+    private String handleFind(String command) throws FindException {
         String keyword = command.substring("find".length()).trim();
         if (keyword.isEmpty()) {
-            throw TaskException.declareEmptySearchKeyword();
+            throw FindException.declareEmptySearchKeyword();
         }
 
         return this.tasks.getTasksMatching(keyword.split(" ", -1));
@@ -190,10 +191,10 @@ public class Duchess {
      * the entire keywords must be contained in the task description as
      * one continuous string, for the task to be displayed.
      */
-    private String handleFindExact(String command) throws TaskException {
+    private String handleFindExact(String command) throws FindException {
         String keyword = command.substring("find -e".length()).trim();
         if (keyword.isEmpty()) {
-            throw TaskException.declareEmptySearchKeyword();
+            throw FindException.declareEmptySearchKeyword();
         }
 
         return this.tasks.getTasksMatching(keyword);

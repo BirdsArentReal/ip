@@ -4,7 +4,7 @@ package duchess.tasks.exceptions;
  * Represents all exceptions related to creating a task.
  */
 public class TaskException extends Exception {
-    private TaskException(String message) {
+    protected TaskException(String message) {
         super("OOPS!!! " + message);
     }
 
@@ -21,11 +21,6 @@ public class TaskException extends Exception {
                 "The description of the %s cannot be empty.",
                 type
         ));
-    }
-
-    /** Creates an exception for a find command without a search keyword. */
-    public static TaskException declareEmptySearchKeyword() {
-        return new TaskException("Please provide a keyword to find.");
     }
 
     /**
