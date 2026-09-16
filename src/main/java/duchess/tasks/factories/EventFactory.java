@@ -22,37 +22,83 @@ class EventFactory {
      *                       date range is missing
      */
     static Event create(String command) throws TaskException {
+        EventDetails details = parseDetails(command);
+        validateDetails(details);
+
+        LocalDate from = TaskFactory.parseDate(details.getFromString());
+        LocalDate to = TaskFactory.parseDate(details.getToString());
+        validateDateRange(details, from, to);
+
+        return new Event(details.getDescription(), from, to);
+    }
+
+    private static EventDetails parseDetails(String command) throws TaskException {
         int fromIndex = TaskFactory.findMarker(command, FROM_MARKER);
         int toIndex = TaskFactory.findMarker(command, TO_MARKER);
-        String description;
-        String fromString;
-        String toString;
 
-        if (toIndex < fromIndex) {
-            description = command.substring(TASK_TYPE.length(), toIndex).trim();
-            fromString = command.substring(fromIndex + FROM_MARKER.length()).trim();
-            toString = command.substring(toIndex + TO_MARKER.length(), fromIndex).trim();
-        } else {
-            description = command.substring(TASK_TYPE.length(), fromIndex).trim();
-            fromString = command.substring(fromIndex + FROM_MARKER.length(), toIndex).trim();
-            toString = command.substring(toIndex + TO_MARKER.length()).trim();
-        }
+        return toIndex < fromIndex
+                ? parseReversedMarkerOrder(command, fromIndex, toIndex)
+                : parseNormalMarkerOrder(command, fromIndex, toIndex);
+    }
 
-        if (description.isEmpty()) {
+    private static EventDetails parseNormalMarkerOrder(
+            String command, int fromIndex, int toIndex) {
+        return new EventDetails(
+                command.substring(TASK_TYPE.length(), fromIndex).trim(),
+                command.substring(fromIndex + FROM_MARKER.length(), toIndex).trim(),
+                command.substring(toIndex + TO_MARKER.length()).trim());
+    }
+
+    private static EventDetails parseReversedMarkerOrder(
+            String command, int fromIndex, int toIndex) {
+        return new EventDetails(
+                command.substring(TASK_TYPE.length(), toIndex).trim(),
+                command.substring(fromIndex + FROM_MARKER.length()).trim(),
+                command.substring(toIndex + TO_MARKER.length(), fromIndex).trim());
+    }
+
+    private static void validateDetails(EventDetails details) throws TaskException {
+        if (details.getDescription().isEmpty()) {
             throw TaskException.declareEmptyDescription(TASK_TYPE);
         }
-        if (fromString.isEmpty()) {
+        if (details.getFromString().isEmpty()) {
             throw TaskException.declareMissingField(TASK_TYPE, FROM_MARKER);
         }
-        if (toString.isEmpty()) {
+        if (details.getToString().isEmpty()) {
             throw TaskException.declareMissingField(TASK_TYPE, TO_MARKER);
         }
+    }
 
-        LocalDate from = TaskFactory.parseDate(fromString);
-        LocalDate to = TaskFactory.parseDate(toString);
+    private static void validateDateRange(EventDetails details,
+            LocalDate from, LocalDate to) throws TaskException {
         if (from.isAfter(to)) {
-            throw TaskException.declareInvalidDateRange(fromString, toString);
+            throw TaskException.declareInvalidDateRange(
+                    details.getFromString(), details.getToString());
         }
-        return new Event(description, from, to);
+    }
+
+    /** Holds the textual fields extracted from an event command. */
+    private static class EventDetails {
+        private final String description;
+        private final String fromString;
+        private final String toString;
+
+        EventDetails(String description, String fromString, String toString) {
+            this.description = description;
+            this.fromString = fromString;
+            this.toString = toString;
+        }
+
+        String getDescription() {
+            return description;
+        }
+
+        String getFromString() {
+            return fromString;
+        }
+
+        String getToString() {
+            return toString;
+        }
     }
 }
