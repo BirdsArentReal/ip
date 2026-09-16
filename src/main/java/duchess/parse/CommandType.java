@@ -23,31 +23,31 @@ public enum CommandType {
         String commandLower = input.stripLeading().toLowerCase();
 
         // Commands with additional fields
-        if (commandLower.startsWith("mark ")) {
+        if (commandLower.startsWith("mark")) {
             return MARK;
         }
-        if (commandLower.startsWith("unmark ")) {
+        if (commandLower.startsWith("unmark")) {
             return UNMARK;
         }
-        if (commandLower.startsWith("delete ")) {
+        if (commandLower.startsWith("delete")) {
             return DELETE;
         }
-        if (commandLower.startsWith("todo ")) {
+        if (commandLower.startsWith("todo")) {
             return TODO;
         }
-        if (commandLower.startsWith("deadline ")) {
+        if (commandLower.startsWith("deadline")) {
             return DEADLINE;
         }
-        if (commandLower.startsWith("event ")) {
+        if (commandLower.startsWith("event")) {
             return EVENT;
         }
-        if (commandLower.startsWith("recurring ")) {
+        if (commandLower.startsWith("recurring")) {
             return RECURRING;
         }
-        if (commandLower.startsWith("find -e ")) {
+        if (commandLower.startsWith("find -e")) {
             return FIND_EXACT;
         }
-        if (commandLower.startsWith("find ")) {
+        if (commandLower.startsWith("find")) {
             return FIND;
         }
 

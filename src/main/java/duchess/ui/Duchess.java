@@ -9,8 +9,8 @@ import duchess.parse.CommandType;
 import duchess.tasks.Task;
 import duchess.tasks.collections.TaskList;
 import duchess.tasks.exceptions.FindException;
-import duchess.tasks.exceptions.TaskCreationException;
 import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.exceptions.UnrecognizedCommandException;
 import duchess.tasks.factories.TaskFactory;
 import duchess.ui.exceptions.DuchessException;
 
@@ -19,6 +19,12 @@ import duchess.ui.exceptions.DuchessException;
  */
 public class Duchess {
     public static final String NAME = "Duchess";
+    private static final String MARK_FORMAT = "mark INDEX";
+    private static final String MARK_EXAMPLE = "mark 1";
+    private static final String UNMARK_FORMAT = "unmark INDEX";
+    private static final String UNMARK_EXAMPLE = "unmark 1";
+    private static final String DELETE_FORMAT = "delete INDEX";
+    private static final String DELETE_EXAMPLE = "delete 1";
 
     private final TaskList tasks;
     private final Storage db;
@@ -88,9 +94,6 @@ public class Duchess {
             };
         } catch (DuchessException | TaskException e) {
             return e.getMessage();
-        } catch (NumberFormatException n) {
-            return "Error: The command " + userInput
-                    + " only works with valid integers!";
         }
     }
 
@@ -126,10 +129,10 @@ public class Duchess {
      * @param command The user input.
      * @return A string representing the
      *          changes to the list of tasks.
-     * @throws TaskCreationException If the task could not be
+     * @throws TaskException If the task could not be
      *                          created from the command.
      */
-    private String handleAddTask(String command) throws TaskCreationException {
+    private String handleAddTask(String command) throws TaskException {
         Task newTask = TaskFactory.createFromCommand(command);
         return this.tasks.addTaskIfNotExist(newTask);
     }
@@ -140,10 +143,15 @@ public class Duchess {
      * @param command The user input.
      * @return A string representing the result of the deletion.
      */
-    private String handleDeleteTask(String command) {
-        String arg = command.substring(7).trim(); // after "delete "
-        int idx = Integer.parseInt(arg);
-        return this.tasks.deleteTaskFromIndex(idx);
+    private String handleDeleteTask(String command) throws UnrecognizedCommandException {
+        String arg = command.substring("delete".length()).trim(); // after "delete "
+        try {
+            int idx = Integer.parseInt(arg);
+            return this.tasks.deleteTaskFromIndex(idx);
+        } catch (NumberFormatException e) {
+            throw UnrecognizedCommandException.declareWithFormatAndExample(
+                    command, DELETE_FORMAT, DELETE_EXAMPLE);
+        }
     }
 
     /**
@@ -153,10 +161,15 @@ public class Duchess {
      * @return A string representing
      *          the task marked as complete.
      */
-    private String handleMark(String command) {
-        String arg = command.substring(5).trim(); // after "mark "
-        int idx = Integer.parseInt(arg);
-        return this.tasks.markTaskAt(idx);
+    private String handleMark(String command) throws UnrecognizedCommandException {
+        String arg = command.substring("mark".length()).trim(); // after "mark "
+        try {
+            int idx = Integer.parseInt(arg);
+            return this.tasks.markTaskAt(idx);
+        } catch (NumberFormatException e) {
+            throw UnrecognizedCommandException.declareWithFormatAndExample(
+                    command, MARK_FORMAT, MARK_EXAMPLE);
+        }
     }
 
     /**
@@ -166,10 +179,15 @@ public class Duchess {
      * @return A string representing the task
      *          marked as incomplete.
      */
-    private String handleUnmark(String command) {
-        String arg = command.substring(7).trim(); // after "unmark "
-        int idx = Integer.parseInt(arg);
-        return this.tasks.unmarkTaskAt(idx);
+    private String handleUnmark(String command) throws UnrecognizedCommandException {
+        String arg = command.substring("unmark".length()).trim(); // after "unmark "
+        try {
+            int idx = Integer.parseInt(arg);
+            return this.tasks.unmarkTaskAt(idx);
+        } catch (NumberFormatException e) {
+            throw UnrecognizedCommandException.declareWithFormatAndExample(
+                    command, UNMARK_FORMAT, UNMARK_EXAMPLE);
+        }
     }
 
     /**

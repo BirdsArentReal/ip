@@ -7,6 +7,8 @@ import java.util.Arrays;
 import duchess.tasks.DateFormat;
 import duchess.tasks.Task;
 import duchess.tasks.exceptions.TaskCreationException;
+import duchess.tasks.exceptions.TaskException;
+import duchess.tasks.exceptions.UnrecognizedCommandException;
 
 /**
  * Handles the creation of tasks.
@@ -42,13 +44,13 @@ public class TaskFactory {
      * Creates a task from the user command.
      *
      * @param commandLower The command to create a task, in lower case.
-     * @throws TaskCreationException If the command is unrecognized, or otherwise
+     * @throws TaskException If the command is unrecognized, or otherwise
      *                          contains invalid characters,
      *                          insufficient information,
      *                          invalid date format,
      *                          or invalid date range.
      */
-    public static Task createFromCommand(String commandLower) throws TaskCreationException {
+    public static Task createFromCommand(String commandLower) throws TaskException {
         assert (commandLower != null) : "Command to create Task cannot be null!";
         assert (commandLower.equals(commandLower.toLowerCase()))
                 : "commandLower must be in lower case!";
@@ -60,17 +62,17 @@ public class TaskFactory {
         }
 
         commandLower = commandLower.stripLeading();
-        if (commandLower.startsWith("todo ")) {
+        if (commandLower.startsWith("todo")) {
             return TodoFactory.create(commandLower);
-        } else if (commandLower.startsWith("deadline ")) {
+        } else if (commandLower.startsWith("deadline")) {
             return DeadlineFactory.create(commandLower);
-        } else if (commandLower.startsWith("event ")) {
+        } else if (commandLower.startsWith("event")) {
             return EventFactory.create(commandLower);
-        } else if (commandLower.startsWith("recurring ")) {
+        } else if (commandLower.startsWith("recurring")) {
             return RecurringTaskFactory.create(commandLower);
         } else {
             // Unrecognised command type
-            throw TaskCreationException.declareUnrecognisedCommand(commandLower);
+            throw UnrecognizedCommandException.declare(commandLower);
         }
     }
 }

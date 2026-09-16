@@ -36,12 +36,6 @@ public class TaskCreationException extends TaskException {
                 command, fieldName, correctFormat, exampleCommand));
     }
 
-    /** Creates an exception for an unrecognised task command. */
-    public static TaskCreationException declareUnrecognisedCommand(String command) {
-        return new TaskCreationException(String.format(
-                "The duchess does not recognise the task: \n  %s", command));
-    }
-
     /** Creates an exception for an invalid date format. */
     public static TaskCreationException declareInvalidDateFormat(String dateStr) {
         return new TaskCreationException(String.format(
