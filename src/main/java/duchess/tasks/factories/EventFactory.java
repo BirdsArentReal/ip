@@ -1,7 +1,6 @@
 package duchess.tasks.factories;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 import duchess.tasks.Event;
 import duchess.tasks.exceptions.TaskCreationException;
@@ -30,20 +29,11 @@ class EventFactory {
         EventDetails details = parseDetails(command);
         validateDetails(details);
 
-        LocalDate from = EventFactory.parseDate(details.getFromString());
-        LocalDate to = EventFactory.parseDate(details.getToString());
+        LocalDate from = TaskFactory.parseDate(details.getFromString());
+        LocalDate to = TaskFactory.parseDate(details.getToString());
         validateDateRange(details, from, to);
 
         return new Event(details.getDescription(), from, to);
-    }
-
-    private static LocalDate parseDate(String dateString)
-            throws TaskCreationException {
-        try {
-            return TaskFactory.parseDate(dateString);
-        } catch (DateTimeParseException e) {
-            throw TaskCreationException.declareInvalidDateFormat(dateString);
-        }
     }
 
     private static EventDetails parseDetails(String command) throws TaskCreationException {
@@ -65,20 +55,20 @@ class EventFactory {
     private static EventDetails parseNormalMarkerOrder(
             String command, int fromIndex, int toIndex) {
         return new EventDetails(
-                TaskFactory.readCommand(command, TASK_TYPE.length(), fromIndex),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(command, TASK_TYPE.length(), fromIndex),
+                TaskFactory.extractCommandSection(
                         command, fromIndex + FROM_MARKER.length(), toIndex),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(
                         command, toIndex + TO_MARKER.length(), command.length()));
     }
 
     private static EventDetails parseReversedMarkerOrder(
             String command, int fromIndex, int toIndex) {
         return new EventDetails(
-                TaskFactory.readCommand(command, TASK_TYPE.length(), toIndex),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(command, TASK_TYPE.length(), toIndex),
+                TaskFactory.extractCommandSection(
                         command, fromIndex + FROM_MARKER.length(), command.length()),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(
                         command, toIndex + TO_MARKER.length(), fromIndex));
     }
 
@@ -102,7 +92,7 @@ class EventFactory {
 
     private static void validateDateRange(EventDetails details,
             LocalDate from, LocalDate to) throws TaskCreationException {
-        if (from.isAfter(to)) {
+        if (!from.isBefore(to)) {
             throw TaskCreationException.declareInvalidDateRange(
                     details.getFromString(), details.getToString());
         }

@@ -17,7 +17,7 @@ class TodoFactory {
      * @throws TaskCreationException if the description is empty
      */
     static ToDo create(String command) throws TaskCreationException {
-        String description = TaskFactory.readCommand(
+        String description = TaskFactory.extractCommandSection(
                 command, TASK_TYPE.length(), command.length());
         if (description.isEmpty()) {
             throw TaskCreationException.declareEmptyDescription(TASK_TYPE);

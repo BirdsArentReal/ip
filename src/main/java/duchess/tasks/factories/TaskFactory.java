@@ -16,15 +16,19 @@ import duchess.tasks.exceptions.UnrecognizedCommandException;
 public class TaskFactory {
     private static final char[] INVALID_CHARACTERS = new char[]{'|'};
 
-    static LocalDate parseDate(String dateStr) throws DateTimeParseException {
-        return LocalDate.parse(dateStr, DateFormat.PARSE_FORMAT);
+    static LocalDate parseDate(String dateStr) throws TaskCreationException {
+        try {
+            return LocalDate.parse(dateStr, DateFormat.PARSE_FORMAT);
+        } catch (DateTimeParseException e) {
+            throw TaskCreationException.declareInvalidDateFormat(dateStr);
+        }
     }
 
     static int findMarker(String command, String marker) {
         return command.indexOf(marker);
     }
 
-    static String readCommand(String command, int start, int end) {
+    static String extractCommandSection(String command, int start, int end) {
         return command.substring(start, end).trim();
     }
 
@@ -55,24 +59,31 @@ public class TaskFactory {
         assert (commandLower.equals(commandLower.toLowerCase()))
                 : "commandLower must be in lower case!";
 
-        if (TaskFactory.containsInvalidCharacters(commandLower)) {
+        String commandLowerStripped = commandLower.stripLeading();
+        validateCommand(commandLowerStripped);
+        return createTask(commandLowerStripped);
+    }
+
+    private static void validateCommand(String command) throws TaskCreationException {
+        if (TaskFactory.containsInvalidCharacters(command)) {
             throw TaskCreationException.declareInvalidCharacters(
-                    commandLower,
+                    command,
                     Arrays.toString(TaskFactory.INVALID_CHARACTERS));
         }
+    }
 
-        commandLower = commandLower.stripLeading();
-        if (commandLower.startsWith("todo")) {
-            return TodoFactory.create(commandLower);
-        } else if (commandLower.startsWith("deadline")) {
-            return DeadlineFactory.create(commandLower);
-        } else if (commandLower.startsWith("event")) {
-            return EventFactory.create(commandLower);
-        } else if (commandLower.startsWith("recurring")) {
-            return RecurringTaskFactory.create(commandLower);
+    private static Task createTask(String command) throws TaskException {
+        if (command.startsWith("todo")) {
+            return TodoFactory.create(command);
+        } else if (command.startsWith("deadline")) {
+            return DeadlineFactory.create(command);
+        } else if (command.startsWith("event")) {
+            return EventFactory.create(command);
+        } else if (command.startsWith("recurring")) {
+            return RecurringTaskFactory.create(command);
         } else {
             // Unrecognised command type
-            throw UnrecognizedCommandException.declare(commandLower);
+            throw UnrecognizedCommandException.declare(command);
         }
     }
 }

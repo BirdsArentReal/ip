@@ -2,7 +2,6 @@ package duchess.tasks.factories;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeParseException;
 
 import duchess.tasks.RecurringTask;
 import duchess.tasks.exceptions.TaskCreationException;
@@ -31,7 +30,7 @@ class RecurringTaskFactory {
         RecurringTaskDetails details = parseDetails(command);
         validateDetails(details);
 
-        LocalDate byDate = RecurringTaskFactory.parseDate(details.getByString());
+        LocalDate byDate = TaskFactory.parseDate(details.getByString());
         Period recurrence = parseRecurrence(details.getRepeatString());
 
         return new RecurringTask(details.getDescription(), byDate, recurrence);
@@ -57,20 +56,20 @@ class RecurringTaskFactory {
     private static RecurringTaskDetails parseNormalMarkerOrder(
             String command, int byIndex, int repeatIndex) {
         return new RecurringTaskDetails(
-                TaskFactory.readCommand(command, TASK_TYPE.length(), byIndex),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(command, TASK_TYPE.length(), byIndex),
+                TaskFactory.extractCommandSection(
                         command, byIndex + BY_MARKER.length(), repeatIndex),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(
                         command, repeatIndex + REPEAT_MARKER.length(), command.length()));
     }
 
     private static RecurringTaskDetails parseReversedMarkerOrder(
             String command, int byIndex, int repeatIndex) {
         return new RecurringTaskDetails(
-                TaskFactory.readCommand(command, TASK_TYPE.length(), repeatIndex),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(command, TASK_TYPE.length(), repeatIndex),
+                TaskFactory.extractCommandSection(
                         command, byIndex + BY_MARKER.length(), command.length()),
-                TaskFactory.readCommand(
+                TaskFactory.extractCommandSection(
                         command, repeatIndex + REPEAT_MARKER.length(), byIndex));
     }
 
@@ -93,20 +92,12 @@ class RecurringTaskFactory {
                 TASK_TYPE, fieldName, CORRECT_FORMAT, EXAMPLE_COMMAND);
     }
 
-    private static LocalDate parseDate(String dateString)
-            throws TaskCreationException {
-        try {
-            return TaskFactory.parseDate(dateString);
-        } catch (DateTimeParseException e) {
-            throw TaskCreationException.declareInvalidDateFormat(dateString);
-        }
-    }
-
     private static Period parseRecurrence(String recurrence) throws TaskCreationException {
         String[] components = recurrence.trim().split("\\s+");
-        boolean isDayUnit = components.length == 2
+        boolean hasExpectedComponents = components.length == 2;
+        boolean hasDayUnit = hasExpectedComponents
                 && (components[1].equals("day") || components[1].equals("days"));
-        if (!isDayUnit) {
+        if (!hasDayUnit) {
             throw TaskCreationException.declareInvalidRecurrenceFormat(
                     recurrence, CORRECT_FORMAT, EXAMPLE_COMMAND);
         }
