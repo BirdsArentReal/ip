@@ -30,8 +30,8 @@ public class TaskCreationException extends TaskException {
             String correctFormat,
             String exampleCommand) {
         return new TaskCreationException(String.format(
-                "I require a %s field for the %s command. Kindly provide one\n"
-                + "in the prescribed format: %s\n"
+                "I require a %s field for the %s command.\n"
+                + "Kindly provide one in the prescribed format: %s\n"
                 + "Example: %s",
                 fieldName, command, correctFormat, exampleCommand));
     }

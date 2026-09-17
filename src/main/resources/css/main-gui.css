@@ -1,5 +1,5 @@
 .root {
-    main-color: rgb(237, 255, 242);
+    main-color: #17213B;
 
     /* Shows color if cannot display image*/
     -fx-background-color: main-color;
@@ -10,28 +10,38 @@
 }
 
 .text-field {
-    -fx-background-color: #d9ffe2
-    -fx-font: 20px "Arial";
+    -fx-background-color: #F8F1E3;
+    -fx-text-fill: #17213B;
+    -fx-prompt-text-fill: #766B7D;
+    -fx-font: 20px "Georgia";
+    -fx-border-color: #C9A227;
+    -fx-border-width: 1px;
 }
 
 .button {
-    -fx-background-color: mediumspringgreen;
-    -fx-font: italic bold 16px "Arial";
+    -fx-background-color: #651F32;
+    -fx-text-fill: #F8F1E3;
+    -fx-font: bold 16px "Georgia";
+    -fx-border-color: #C9A227;
+    -fx-border-width: 1px;
+}
+
+#inputContainer {
+    -fx-background-color: rgba(23, 33, 59, 0.92);
 }
 
 .button:hover {
-    -fx-background-color:cyan;
-    -fx-font-size: 18px;
+    -fx-background-color: #8A2F49;
+    -fx-border-color: #E2C45A;
 }
 
 .button:pressed {
-    -fx-background-color:orange;
-    -fx-font-size: 20px;
+    -fx-background-color: #3B235A;
 }
 
 .scroll-pane,
 .scroll-pane .viewport {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(23, 33, 59, 0.78);
 }
 
 .scroll-bar {
@@ -40,7 +50,7 @@
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: #ff9cb4;
+    -fx-background-color: #C9A227;
     -fx-background-radius: 1em;
 }
 
@@ -52,5 +62,8 @@
 }
 
 .scroll-pane {
-    -fx-background-color: rgb(255, 255, 255, 0.5)
+    -fx-background-color: rgba(23, 33, 59, 0.78);
+    -fx-border-color: #C9A227;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6px;
 }
