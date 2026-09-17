@@ -40,7 +40,7 @@ public class Main extends Application {
         mainWindow.setBot(duchess);
 
         stage.setScene(new Scene(ap));
-        stage.setTitle("Her Grace");
+        stage.setTitle("Duchess");
         stage.setMinWidth(400.0);
         stage.setMinHeight(600.0);
         stage.show();

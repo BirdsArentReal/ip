@@ -74,13 +74,13 @@ public class MainWindow extends AnchorPane {
         DialogBox userText = DialogBox.getUserDialogBox(
                 input
         );
-        DialogBox dukeResponse = DialogBox.getDuchessDialogBox(
+        DialogBox duchessResponse = DialogBox.getDuchessDialogBox(
                 response
         );
 
         this.dialogContainer.getChildren().addAll(
                 userText,
-                dukeResponse
+                duchessResponse
         );
 
         this.userInput.clear();

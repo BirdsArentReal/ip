@@ -20,7 +20,7 @@ import javafx.scene.layout.HBox;
  */
 public class DialogBox extends HBox {
     private static final Image USER_IMAGE = new Image(DialogBox.class.getResourceAsStream("/images/Soyjak.jpg"));
-    private static final Image DUKE_IMAGE = new Image(DialogBox.class.getResourceAsStream("/images/Gigachad.jpg"));
+    private static final Image DUCHESS_IMAGE = new Image(DialogBox.class.getResourceAsStream("/images/Gigachad.jpg"));
 
     @FXML
     private Label textDisplay;
@@ -70,7 +70,7 @@ public class DialogBox extends HBox {
     }
 
     public static DialogBox getDuchessDialogBox(String response) {
-        DialogBox db = new DialogBox(response, DUKE_IMAGE);
+        DialogBox db = new DialogBox(response, DUCHESS_IMAGE);
         db.flip();
         return db;
     }
