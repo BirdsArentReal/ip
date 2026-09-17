@@ -50,7 +50,7 @@ public class TaskList {
      * Returns "s" if {@code tasks.size()} is 0, or is 2 or more.
      * Otherwise, if {@code tasks.size()} is exactly 1, return "".
      */
-    private String displayTaskPluralOrSingular() {
+    private String getTaskPluralSuffix() {
         if (this.tasks.size() == 1) {
             return "";
         } else {
@@ -84,9 +84,7 @@ public class TaskList {
     public String addTaskIfNotExist(Task newTask) {
         assert (newTask != null) : "A task added to tasklist cannot be null.";
 
-        if (this.tasks.stream()
-                .map(Task::toString)
-                .anyMatch(str -> str.equals(newTask.toString()))) {
+        if (containsEquivalentTask(newTask)) {
             return "Ohoho! That task is already on the agenda.\n"
                     + "I have no intention of entertaining its second appearance.";
         }
@@ -99,8 +97,7 @@ public class TaskList {
                         + "You now have %s matter%s on the agenda, thanks to my careful administration.",
                 newTask,
                 this.tasks.size(),
-                this.displayTaskPluralOrSingular()
-        );
+                this.getTaskPluralSuffix());
     }
 
     /**
@@ -114,17 +111,17 @@ public class TaskList {
         if (!isValidIndex(idx)) {
             return INVALID_TASK_NUMBER_MESSAGE;
         }
-        Task t = this.tasks.remove(idx - 1);
+        Task removedTask = this.tasks.remove(idx - 1);
 
-        assert (!this.tasks.contains(t)) : "Task not removed from tasklist";
+        assert (!this.tasks.contains(removedTask)) : "Task not removed from tasklist";
 
         return String.format(
                 "At last, a sensible decision. I have removed the matter from the agenda:\n"
                         + "%s\n"
                         + "You now have %d matter%s on the agenda. You’re welcome.",
-                t,
+                removedTask,
                 this.tasks.size(),
-                this.displayTaskPluralOrSingular()
+                this.getTaskPluralSuffix()
         );
     }
 
@@ -143,9 +140,7 @@ public class TaskList {
         Task t = this.tasks.get(idx - 1);
         t.mark();
 
-        if (t instanceof RecurringTask recurringTask) {
-            this.addTaskIfNotExist(recurringTask.createNextOccurrence());
-        }
+        addNextOccurrenceIfRecurring(t);
 
         /*
          check that t has been marked using the toString,
@@ -154,6 +149,17 @@ public class TaskList {
         assert (t.toString().contains("[X] ")) : "Marked task should be complete";
 
         return "Well done. Under my supervision, you have completed a matter:\n  " + t;
+    }
+
+    /**
+     * Adds the next occurrence when a completed task is recurring.
+     *
+     * @param task the task that was just completed
+     */
+    private void addNextOccurrenceIfRecurring(Task task) {
+        if (task instanceof RecurringTask recurringTask) {
+            this.addTaskIfNotExist(recurringTask.createNextOccurrence());
+        }
     }
 
     /**
@@ -205,7 +211,23 @@ public class TaskList {
      * @return the matching tasks, or a message when no tasks match
      */
     public String getTasksMatching(String... keywords) {
-        String results = IntStream.range(0, this.tasks.size())
+        String results = getMatchingTaskLines(keywords);
+
+        if (results.isEmpty()) {
+            return "I found nothing matching your request. You may wish to phrase it more competently.";
+        }
+
+        return results;
+    }
+
+    /**
+     * Returns the indexed display lines for tasks matching all keywords.
+     *
+     * @param keywords the case-insensitive search terms
+     * @return matching task lines joined by newlines
+     */
+    private String getMatchingTaskLines(String... keywords) {
+        return IntStream.range(0, this.tasks.size())
                 .mapToObj(index ->
                         new Pair<>(index, this.tasks.get(index)))
                 .filter(pair ->
@@ -217,12 +239,6 @@ public class TaskList {
                                 pair.getFirst() + 1,
                                 pair.getSecond()))
                 .collect(Collectors.joining("\n"));
-
-        if (results.isEmpty()) {
-            return "I found nothing matching your request. You may wish to phrase it more competently.";
-        }
-
-        return results;
     }
 
     /**
@@ -240,6 +256,12 @@ public class TaskList {
                                 index + 1,
                                 this.tasks.get(index)))
                 .collect(Collectors.joining("\n"));
+    }
+
+    private boolean containsEquivalentTask(Task newTask) {
+        return this.tasks.stream()
+                .map(Task::toString)
+                .anyMatch(description -> description.equals(newTask.toString()));
     }
 
 }
