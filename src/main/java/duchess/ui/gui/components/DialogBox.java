@@ -31,18 +31,7 @@ public class DialogBox extends HBox {
         assert (text != null) : "Dialog text must not be null";
         assert (picture != null) : "Dialog image must not be null";
 
-        URL fxmlResource = DialogBox.class.getResource("/view/DialogBox.fxml");
-        assert (fxmlResource != null) : "DialogBox.fxml must be present in /resources/view/";
-
-        FXMLLoader fxmlLoader = new FXMLLoader(fxmlResource);
-        fxmlLoader.setController(this);
-        fxmlLoader.setRoot(this);
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException e) {
-            throw new IllegalStateException("Dialog box could not be loaded", e);
-        }
+        loadLayout();
 
         assert (this.textDisplay != null)
                 : "textDisplay must be injected from DialogBox.fxml";
@@ -55,13 +44,35 @@ public class DialogBox extends HBox {
 
     }
 
-    private void flip() {
+    private void loadLayout() {
+        URL fxmlResource = DialogBox.class.getResource("/view/DialogBox.fxml");
+        assert (fxmlResource != null) : "DialogBox.fxml must be present in /resources/view/";
+
+        FXMLLoader fxmlLoader = new FXMLLoader(fxmlResource);
+        fxmlLoader.setController(this);
+        fxmlLoader.setRoot(this);
+
+        try {
+            fxmlLoader.load();
+        } catch (IOException e) {
+            throw new IllegalStateException("Dialog box could not be loaded", e);
+        }
+    }
+
+    private void configureAsDuchessReply() {
+        reverseChildren();
+        applyReplyStyle();
+    }
+
+    private void reverseChildren() {
         this.setAlignment(Pos.TOP_LEFT);
         ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
 
         FXCollections.reverse(tmp);
         this.getChildren().setAll(tmp);
+    }
 
+    private void applyReplyStyle() {
         this.textDisplay.getStyleClass().add("reply-label");
     }
 
@@ -70,8 +81,8 @@ public class DialogBox extends HBox {
     }
 
     public static DialogBox getDuchessDialogBox(String response) {
-        DialogBox db = new DialogBox(response, DUCHESS_IMAGE);
-        db.flip();
-        return db;
+        DialogBox dialogBox = new DialogBox(response, DUCHESS_IMAGE);
+        dialogBox.configureAsDuchessReply();
+        return dialogBox;
     }
 }
