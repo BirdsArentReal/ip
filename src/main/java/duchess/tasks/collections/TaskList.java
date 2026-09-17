@@ -15,7 +15,7 @@ import duchess.util.Pair;
  */
 public class TaskList {
     private static final String INVALID_TASK_NUMBER_MESSAGE =
-            "Invalid task number.";
+            "That task does not exist. Kindly consult the agenda before issuing commands.";
     private final ArrayList<Task> tasks;
 
     /**
@@ -87,15 +87,16 @@ public class TaskList {
         if (this.tasks.stream()
                 .map(Task::toString)
                 .anyMatch(str -> str.equals(newTask.toString()))) {
-            return "An indistinguishable task already exists!";
+            return "Ohoho! That task is already on the agenda.\n"
+                    + "I have no intention of entertaining its second appearance.";
         }
 
         this.tasks.add(newTask);
 
         return String.format(
-                "Got it. I've added this task:\n"
+                "You may consider it handled. I have graciously added this matter to the agenda:\n"
                         + "  %s\n"
-                        + "Now you have %s task%s in the list.",
+                        + "You now have %s matter%s on the agenda, thanks to my careful administration.",
                 newTask,
                 this.tasks.size(),
                 this.displayTaskPluralOrSingular()
@@ -118,9 +119,9 @@ public class TaskList {
         assert (!this.tasks.contains(t)) : "Task not removed from tasklist";
 
         return String.format(
-                "Noted. I've removed this task:\n"
+                "At last, a sensible decision. I have removed the matter from the agenda:\n"
                         + "%s\n"
-                        + "Now you have %d task%s in the list.",
+                        + "You now have %d matter%s on the agenda. You’re welcome.",
                 t,
                 this.tasks.size(),
                 this.displayTaskPluralOrSingular()
@@ -152,7 +153,7 @@ public class TaskList {
         */
         assert (t.toString().contains("[X] ")) : "Marked task should be complete";
 
-        return "Nice! I've marked this task as done:\n  " + t;
+        return "Well done. Under my supervision, you have completed a matter:\n  " + t;
     }
 
     /**
@@ -176,7 +177,8 @@ public class TaskList {
         */
         assert (t.toString().contains("[ ] ")) : "Unmarked task should be incomplete";
 
-        return "OK, I've marked this task as not done yet:\n  " + t;
+        return "Very well. I shall return this matter to your list of obligations.\n"
+                + "Do try to finish it next time:\n  " + t;
     }
 
     /**
@@ -217,7 +219,7 @@ public class TaskList {
                 .collect(Collectors.joining("\n"));
 
         if (results.isEmpty()) {
-            return "There are no matching tasks in your list.";
+            return "I found nothing matching your request. You may wish to phrase it more competently.";
         }
 
         return results;
@@ -229,7 +231,7 @@ public class TaskList {
      */
     public String getTasksToPrint() {
         if (this.tasks.isEmpty()) {
-            return "You have no tasks pending.";
+            return "The agenda is empty. You may bask in this modest achievement; I made it look effortless.";
         }
 
         return IntStream.range(0, this.tasks.size())
