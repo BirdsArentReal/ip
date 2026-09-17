@@ -9,7 +9,8 @@ public class UnrecognizedCommandException extends TaskException {
     /** Creates a generic unrecognised-command exception. */
     public static UnrecognizedCommandException declare(String command) {
         return new UnrecognizedCommandException(String.format(
-                "The duchess does not recognise the command: \n  %s",
+                "I do not recognise that command:\n  %s\n"
+                        + "You may consult the commands I have graciously made available.",
                 command));
     }
 
@@ -17,8 +18,8 @@ public class UnrecognizedCommandException extends TaskException {
     public static UnrecognizedCommandException declareWithFormatAndExample(
             String command, String correctFormat, String exampleCommand) {
         return new UnrecognizedCommandException(String.format(
-                "The duchess does not recognise the command: %s\n"
-                + "Please enter the command in the format: %s\n"
+                "That command is improperly formed: %s\n"
+                + "Use the prescribed format: %s\n"
                 + "Example: %s",
                 command, correctFormat, exampleCommand));
     }
