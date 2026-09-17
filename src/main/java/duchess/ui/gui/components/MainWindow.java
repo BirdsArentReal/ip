@@ -15,6 +15,8 @@ import javafx.util.Duration;
  * Displays the main window the user views and interacts with.
  */
 public class MainWindow extends AnchorPane {
+    private static final double EXIT_DELAY_SECONDS = 1.0;
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -45,10 +47,10 @@ public class MainWindow extends AnchorPane {
      * Additionally, greets the user, once the
      * bot is successfully set.
      */
-    public void setBot(Duchess d) {
-        assert (d != null) : "The application requires the bot to be set";
+    public void setBot(Duchess duchess) {
+        assert (duchess != null) : "The application requires the bot to be set";
 
-        this.duchess = d;
+        this.duchess = duchess;
         this.greet();
     }
 
@@ -70,24 +72,20 @@ public class MainWindow extends AnchorPane {
         String input = this.userInput.getText();
         String response = this.duchess.respondTo(input);
 
-        /* Display in dialog boxes. */
-        DialogBox userText = DialogBox.getUserDialogBox(
-                input
-        );
-        DialogBox duchessResponse = DialogBox.getDuchessDialogBox(
-                response
-        );
+        DialogBox userText = DialogBox.getUserDialogBox(input);
+        DialogBox duchessResponse = DialogBox.getDuchessDialogBox(response);
 
-        this.dialogContainer.getChildren().addAll(
-                userText,
-                duchessResponse
-        );
+        this.dialogContainer.getChildren().addAll(userText, duchessResponse);
 
         this.userInput.clear();
 
-        /* Close the application if the user says bye. */
+        exitIfRequired(response);
+    }
+
+    private void exitIfRequired(String response) {
         if (response.equals(Duchess.getExitMessage())) {
-            PauseTransition delay = new PauseTransition(Duration.seconds(1.0));
+            PauseTransition delay = new PauseTransition(
+                    Duration.seconds(EXIT_DELAY_SECONDS));
             delay.setOnFinished(event -> Platform.exit());
             delay.play();
         }
