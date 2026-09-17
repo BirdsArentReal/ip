@@ -58,12 +58,22 @@ public class Duchess {
     }
 
     /**
+     * Normalises user input before command parsing.
+     *
+     * @param userInput the raw user input
+     * @return trimmed, lower-case user input
+     */
+    private static String normalizeInput(String userInput) {
+        return userInput.trim().toLowerCase();
+    }
+
+    /**
      * Runs the duchess chatbot to respond to user input.
      */
     public String respondTo(String userInput) {
         assert (userInput != null) : "Should not ask duchess to respond to null strings";
 
-        userInput = userInput.trim().toLowerCase();
+        userInput = Duchess.normalizeInput(userInput);
         CommandType commandType = CommandType.parse(userInput);
 
         String response = this.handleCommand(userInput, commandType);
@@ -100,15 +110,17 @@ public class Duchess {
      * @throws IOException If unable to save to the file.
      */
     private void saveStateIfMutated(CommandType commandType) throws IOException {
-        if (CommandType.isMutator(commandType)) {
-            try {
-                this.db.save(this.tasks);
-            } catch (IOException e) {
-                throw new IOException(
-                        "Oh no! The duchess has caught the goldfish syndrome! \n"
-                        + "She is unable to remember your current list. \n"
-                        + "Please check out the storage path as soon as possible!");
-            }
+        if (!CommandType.isMutator(commandType)) {
+            return;
+        }
+
+        try {
+            this.db.save(this.tasks);
+        } catch (IOException e) {
+            throw new IOException(
+                    "Oh no! The duchess has caught the goldfish syndrome! \n"
+                            + "She is unable to remember your current list. \n"
+                            + "Please check out the storage path as soon as possible!");
         }
     }
 
@@ -142,9 +154,8 @@ public class Duchess {
      * @return A string representing the result of the deletion.
      */
     private String handleDeleteTask(String command) throws UnrecognizedCommandException {
-        String arg = command.substring("delete".length()).trim(); // after "delete "
         try {
-            int idx = Integer.parseInt(arg);
+            int idx = parseTaskIndex(command, "delete");
             return this.tasks.deleteTaskFromIndex(idx);
         } catch (NumberFormatException e) {
             throw UnrecognizedCommandException.declareWithFormatAndExample(
@@ -160,9 +171,8 @@ public class Duchess {
      *          the task marked as complete.
      */
     private String handleMark(String command) throws UnrecognizedCommandException {
-        String arg = command.substring("mark".length()).trim(); // after "mark "
         try {
-            int idx = Integer.parseInt(arg);
+            int idx = parseTaskIndex(command, "mark");
             return this.tasks.markTaskAt(idx);
         } catch (NumberFormatException e) {
             throw UnrecognizedCommandException.declareWithFormatAndExample(
@@ -178,9 +188,8 @@ public class Duchess {
      *          marked as incomplete.
      */
     private String handleUnmark(String command) throws UnrecognizedCommandException {
-        String arg = command.substring("unmark".length()).trim(); // after "unmark "
         try {
-            int idx = Integer.parseInt(arg);
+            int idx = parseTaskIndex(command, "unmark");
             return this.tasks.unmarkTaskAt(idx);
         } catch (NumberFormatException e) {
             throw UnrecognizedCommandException.declareWithFormatAndExample(
@@ -189,12 +198,36 @@ public class Duchess {
     }
 
     /**
+     * Extracts the argument following a command name.
+     *
+     * @param command the complete command
+     * @param commandName the command name
+     * @return the trimmed command argument
+     */
+    private String getArgument(String command, String commandName) {
+        return command.substring(commandName.length()).trim();
+    }
+
+    /**
+     * Extracts and parses the task index following a command name.
+     *
+     * @param command the complete command
+     * @param commandName the command name
+     * @return the parsed task index
+     * @throws NumberFormatException if the argument is not an integer
+     */
+    private int parseTaskIndex(String command, String commandName)
+            throws NumberFormatException {
+        return Integer.parseInt(getArgument(command, commandName));
+    }
+
+    /**
      * Finds tasks whose descriptions contain the keyword supplied after the find command.
      * Text separated by spaces are treated as different keywords, and the result
      * only contains tasks whose description match all keywords.
      */
     private String handleFind(String command) throws FindException {
-        String keyword = command.substring("find".length()).trim();
+        String keyword = getArgument(command, "find");
         if (keyword.isEmpty()) {
             throw FindException.declareEmptyFindKeyword();
         }
@@ -209,7 +242,7 @@ public class Duchess {
      * one continuous string, for the task to be displayed.
      */
     private String handleFindExact(String command) throws FindException {
-        String keyword = command.substring("find -e".length()).trim();
+        String keyword = getArgument(command, "find -e");
         if (keyword.isEmpty()) {
             throw FindException.declareEmptyFindExactKeyword();
         }
