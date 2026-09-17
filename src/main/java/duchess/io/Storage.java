@@ -42,12 +42,11 @@ public class Storage {
     private static final String COMPLETED_STATUS = "1";
     private static final String INCOMPLETE_STATUS = "0";
 
-    private static final int EXPECTED_STORE_FORMAT_LENGTH = 4;
-
-    private static final int TASK_STATUS_INDEX = 0;
-    private static final int TASK_DESCRIPTION_INDEX = 1;
-    private static final int TASK_TYPE_INDEX = 2;
-    private static final int TASK_ADDITIONAL_INFORMATION_INDEX = 3;
+    private static final int EXPECTED_COMPONENT_COUNT = 4;
+    private static final int STATUS_COMPONENT_INDEX = 0;
+    private static final int DESCRIPTION_COMPONENT_INDEX = 1;
+    private static final int TYPE_COMPONENT_INDEX = 2;
+    private static final int ADDITIONAL_INFORMATION_COMPONENT_INDEX = 3;
 
     /* Instance-level variables */
     private final Path filePath;
@@ -81,7 +80,7 @@ public class Storage {
      * @throws StorageException If the line cannot be interpreted
      *                          as a task.
      */
-    private static String[] splitStored(String line) throws StorageException {
+    private static TaskComponents parseStoredComponents(String line) throws StorageException {
         assert (line != null) : "Stored task should not be null";
 
         // Set limit to -1 so that all instances of "|" are split.
@@ -91,28 +90,19 @@ public class Storage {
             items[i] = items[i].trim();
         }
 
-        if (!isValidSplit(items)) {
+        /* Check line validity */
+        boolean hasExpectedComponentCount = (items.length == EXPECTED_COMPONENT_COUNT);
+        boolean hasRecognisedTaskType = hasExpectedComponentCount // short-circuiting
+                && STORED_CHAR_TO_TYPE.containsKey(items[TYPE_COMPONENT_INDEX]);
+        if (!hasExpectedComponentCount || !hasRecognisedTaskType) {
             throw new StorageException("Split failed. \n" + line);
         }
 
-        return items;
-    }
-
-    /**
-     * Conducts a preliminary check for whether the string array can
-     * describe a {@code Task}.
-     * @param components The components of the storage line after the split.
-     * @return {@code true}, if the array is of correct length, and the task type is valid.
-     *          <p> {@code false}, otherwise.
-     */
-    private static boolean isValidSplit(String[] components) {
-        assert (components != null) : "Components of a task cannot be null";
-
-        if (components.length != EXPECTED_STORE_FORMAT_LENGTH) {
-            return false;
-        }
-
-        return STORED_CHAR_TO_TYPE.containsKey(components[TASK_TYPE_INDEX]);
+        return new TaskComponents(
+                items[STATUS_COMPONENT_INDEX],
+                items[DESCRIPTION_COMPONENT_INDEX],
+                items[TYPE_COMPONENT_INDEX],
+                items[ADDITIONAL_INFORMATION_COMPONENT_INDEX]);
     }
 
     /**
@@ -122,17 +112,14 @@ public class Storage {
      * @return A {@code Task}, as described by the components.
      * @throws TaskException If the components cannot be recognized as a {@code Task}.
      */
-    private static Task makeTask(String[] components) throws TaskException {
-        String type = STORED_CHAR_TO_TYPE.get(components[TASK_TYPE_INDEX]);
-        String desc = components[TASK_DESCRIPTION_INDEX];
-        String additional = components[TASK_ADDITIONAL_INFORMATION_INDEX];
-        Task task = TaskFactory.createFromCommand(String.format(
+    private static Task createTaskFromComponents(TaskComponents components)
+            throws TaskException {
+        return TaskFactory.createFromCommand(String.format(
                 "%s %s %s",
-                type,
-                desc,
-                additional
+                STORED_CHAR_TO_TYPE.get(components.type()),
+                components.description(),
+                components.additionalInformation()
         ));
-        return task;
     }
 
     /**
@@ -152,18 +139,27 @@ public class Storage {
         return switch (taskStatus) {
             case INCOMPLETE_STATUS -> false;
             case COMPLETED_STATUS -> true;
-            default -> throw new StorageException("IsDone has incorrect format.");
+            default -> throw new StorageException(
+                    "IsDone has incorrect format: " + taskStatus);
         };
     }
 
     /**
      * Loads previously saved tasks.
      *
-     * @return The saved tasks, or an empty list when there is no data file.
+     * @return The saved tasks, excluding invalid stored records.
      */
     public ArrayList<Task> load() throws IOException {
-        List<String> lines = Files.readAllLines(this.filePath);
+        return deserializeLines(readStorageLines());
+    }
 
+    /** Reads all records currently stored in the data file. */
+    private List<String> readStorageLines() throws IOException {
+        return Files.readAllLines(this.filePath);
+    }
+
+    /** Reconstructs all valid tasks from the supplied storage records. */
+    private ArrayList<Task> deserializeLines(List<String> lines) {
         // Add all tasks in storage to an arraylist.
         ArrayList<Task> tasks = new ArrayList<>();
         for (String line : lines) {
@@ -186,13 +182,22 @@ public class Storage {
      */
     private static Task deserialize(String line) throws TaskException {
         try {
-            String[] components = Storage.splitStored(line);
-            Task task = makeTask(components);
-            markIfComplete(task, components[TASK_STATUS_INDEX]);
+            TaskComponents components = parseStoredComponents(line);
+            Task task = createTaskFromComponents(components);
+            markIfComplete(task, components.status());
             return task;
         } catch (StorageException e) {
             throw UnrecognizedCommandException.declare(line);
         }
+    }
+
+
+    /** Holds the named fields of one stored task record. */
+    private record TaskComponents(
+            String status,
+            String description,
+            String type,
+            String additionalInformation) {
     }
 
     /**
@@ -201,6 +206,7 @@ public class Storage {
      * @param tasks The current task list.
      */
     public void save(TaskList tasks) throws IOException {
+        assert (tasks != null) : "Task list to save must not be null";
         Files.write(this.filePath, tasks.getStorageFormat());
     }
 }
